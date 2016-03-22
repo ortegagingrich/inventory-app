@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.shortcuts import redirect
+
+def redirect_to_inventory(request):
+	return redirect(r'inventory/')
 
 urlpatterns = [
-	url(r'^inventory/', include('inventory.inventory_urls')),
+	url(r'^inventory/', include('inventory.inventory_urls'), name='inventory'),
     url(r'^admin/', admin.site.urls),
+    url(r'^$', redirect_to_inventory),
 ]
