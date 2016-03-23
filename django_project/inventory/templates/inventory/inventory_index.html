@@ -1,0 +1,17 @@
+{% if item_list %}
+	<ul>
+	{% for item in item_list %}
+		<li>
+			<a href="/inventory/{{ item.id }}/">{{item.item_type.name}}</a>
+			:Expires: {{item.printed_expiration_date}}
+			{% if item.opened %}
+				(Opened on {{item.opened_date}})
+			{% else %}
+				(Not Opened)
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>No items are in the inventory.</p>
+{% endif %}

@@ -28,6 +28,7 @@ class Item(models.Model):
 	
 	printed_expiration_date = models.DateField(blank=True)
 	opened_date = models.DateField(null=True, blank=True)
+	opened = models.BooleanField(default = False)
 	
 	def __str__(self):
 		return self.item_type.name
