@@ -7,6 +7,7 @@ from django.views.generic.base import RedirectView
 
 from views import views
 
+app_name = 'inventory'
 urlpatterns = [
 	#/inventory/
 	url(r'^$', views.inventory_greeter, name='inventory_greeter'),

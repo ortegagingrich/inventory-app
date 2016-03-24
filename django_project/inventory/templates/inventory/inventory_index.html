@@ -2,7 +2,7 @@
 	<ul>
 	{% for item in item_list %}
 		<li>
-			<a href="/inventory/{{ item.id }}/">{{item.item_type.name}}</a>
+			<a href="{% url 'inventory:item_detail' item.id %}">{{item.item_type.name}}</a>
 			:Expires: {{item.printed_expiration_date}}
 			{% if item.opened %}
 				(Opened on {{item.opened_date}})

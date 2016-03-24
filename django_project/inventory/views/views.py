@@ -10,7 +10,9 @@ from inventory.models import *
 
 #front page
 def inventory_greeter(request):
-	return HttpResponse("Welcome to the Inventory System")
+	template = 'inventory/inventory_greeter.html'
+	context = {}
+	return render(request, template, context)
 
 def inventory_index(request):
 	items = Item.objects.order_by('printed_expiration_date')

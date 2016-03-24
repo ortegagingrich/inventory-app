@@ -9,6 +9,15 @@ class Location(models.Model):
 	refrigerated = models.BooleanField(default = False)
 	frozen = models.BooleanField(default = False)
 	
+	@property
+	def temperature(self):
+		if self.frozen:
+			return "frozen"
+		elif self.refrigerated:
+			return "refrigerated"
+		else:
+			return "room temperature"
+	
 	def __str__(self):
 		return self.name
 
@@ -29,6 +38,18 @@ class Item(models.Model):
 	printed_expiration_date = models.DateField(blank=True)
 	opened_date = models.DateField(null=True, blank=True)
 	opened = models.BooleanField(default = False)
+	
+	@property
+	def expiration_date(self):
+		"""
+		Computes the actual expiration date, assuming the item is stored in its
+		current conditions indefinitely.
+		"""
+		if self.item_type.openable and self.opened:
+			print opened_date
+			print item_type.open_expiration_term
+		
+		return self.printed_expiration_date
 	
 	def __str__(self):
 		return self.item_type.name
