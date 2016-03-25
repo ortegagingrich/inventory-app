@@ -1,0 +1,33 @@
+<h1>Item Details</h1>
+<ul>
+	<li>
+		Type: {{ item.item_type }}
+	</li>
+	<li>
+		Location: {{ item.location }}
+	</li>
+	<li>
+		Storage Temperature: {{ item.location.temperature }}
+	</li>
+	{% if item.item_type.openable %}
+	<li>
+		{% if item.opened %}
+			Opened on {{ item.opened_date }}
+		{% else %}
+			Not Opened 
+		{% endif %}
+	</li>
+	{% endif %}
+	<li>
+		Printed Expiration Date: {{ item.printed_expiration_date }}
+	</li>
+	{% if item.expired %}
+		<font color="red">
+	{% endif %}
+	<li>
+		Actual Expiration Date: {{ item.expiration_date }}
+	</li>
+	{% if item.expired %}
+		</font>
+	{% endif %}
+</ul>

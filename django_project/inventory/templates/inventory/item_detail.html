@@ -1,19 +1,16 @@
-<h1>Item Details</h1>
+<div class="basic">
+	{% include "inventory/item_details_summary.html" %}
+</div>
+
+<h3>Actions:</h3>
+
 <ul>
+	{% if not item.opened %}
 	<li>
-		Type: {{ item.item_type }}
+		<a href="{% url 'inventory:item_open' item.id %}">Open</a>
 	</li>
+	{% endif %}
 	<li>
-		Location: {{ item.location }}
-	</li>
-	<li>
-		Storage Temperature: {{ item.location.temperature }}
-	</li>
-	<li>
-		Printed Expiration Date: {{ item.printed_expiration_date }}
-	</li>
-	<li>
-		Actual Expiration Date: {{ item.expiration_date }}
+		<a href="{% url 'inventory:inventory_index' %}">Return to Index</a>
 	</li>
 </ul>
-{{ item }}

@@ -5,7 +5,7 @@ URLs related to the inventory system
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
 
-from views import views
+from views import actions, views
 
 app_name = 'inventory'
 urlpatterns = [
@@ -17,6 +17,10 @@ urlpatterns = [
 	url(r'^(?P<item_id>[0-9]+)/$', views.item_detail, name='item_detail'),
 	#/inventory/5/open/
 	url(r'^(?P<item_id>[0-9]+)/open/$', views.item_open, name='item_open'),
+	#/inventory/5/open/2016-08-23
+	url(r'^(?P<item_id>[0-9]+)/open/submit/$', 
+	    actions.item_open, name='item_open_submit'),
+	
 ]
 
 

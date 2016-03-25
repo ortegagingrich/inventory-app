@@ -3,11 +3,27 @@
 	{% for item in item_list %}
 		<li>
 			<a href="{% url 'inventory:item_detail' item.id %}">{{item.item_type.name}}</a>
-			:Expires: {{item.printed_expiration_date}}
-			{% if item.opened %}
-				(Opened on {{item.opened_date}})
+			{% if item.expired %}
+				<font color="red">
+				: Expired:
 			{% else %}
-				(Not Opened)
+				: Expires: 
+			{% endif %}
+			{{item.expiration_date}}
+			{% if item.expired %}
+				</font>
+			{% endif %}
+			
+			{% if item.opened %}
+				{% if item.expired %}
+					<font color="red">
+				{% else %}
+					<font color="green">
+				{% endif %}
+				(Opened on {{item.opened_date}})
+				</font>
+			{% else %}
+				<font color="blue">(Not Opened)</font>
 			{% endif %}
 		</li>
 	{% endfor %}

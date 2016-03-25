@@ -1,6 +1,7 @@
 """
 Basic Views for the Inventory System
 """
+from datetime import date
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -33,7 +34,12 @@ def item_detail(request, item_id):
 
 
 def item_open(request, item_id):
-	return HttpResponse("Opening item {}.".format(item_id))
+	template = 'inventory/item_open.html'
+	item = get_object_or_404(Item, pk=item_id)
+	context = {
+		'item': item,
+	}
+	return render(request, template, context)
 
 
 def __test__():

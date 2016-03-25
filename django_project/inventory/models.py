@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from datetime import date
+
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
@@ -12,11 +14,11 @@ class Location(models.Model):
 	@property
 	def temperature(self):
 		if self.frozen:
-			return "frozen"
+			return "Frozen"
 		elif self.refrigerated:
-			return "refrigerated"
+			return "Refrigerated"
 		else:
-			return "room temperature"
+			return "Room Temperature"
 	
 	def __str__(self):
 		return self.name
@@ -37,7 +39,14 @@ class Item(models.Model):
 	
 	printed_expiration_date = models.DateField(blank=True)
 	opened_date = models.DateField(null=True, blank=True)
-	opened = models.BooleanField(default = False)
+	
+	@property
+	def expired(self):
+		return date.today() > self.expiration_date
+	
+	@property
+	def opened(self):
+		return self.opened_date != None
 	
 	@property
 	def expiration_date(self):
@@ -45,11 +54,14 @@ class Item(models.Model):
 		Computes the actual expiration date, assuming the item is stored in its
 		current conditions indefinitely.
 		"""
-		if self.item_type.openable and self.opened:
-			print opened_date
-			print item_type.open_expiration_term
+		modified_date = self.printed_expiration_date
 		
-		return self.printed_expiration_date
+		if self.item_type.openable and self.opened:
+			base_date = self.opened_date
+			term = self.item_type.open_expiration_term
+			modified_date = min(base_date + term, modified_date)
+		
+		return min(self.printed_expiration_date, modified_date)
 	
 	def __str__(self):
 		return self.item_type.name

@@ -1,0 +1,15 @@
+<div class="basic">
+	{% include "inventory/item_details_summary.html" %}
+</div>
+
+<h3>When was this item opened?</h3>
+<form action="{% url 'inventory:item_open_submit' item.id %}" method="post">
+	{% csrf_token %}
+	<ul>
+		<input type="radio" name="choice" id="choicetoday" value="today"/>
+		<label for="choicetoday">Today</label> <br />
+		<input type="radio" name="choice" id="choiceother" value="other"/>
+		<input type = "date" name="open_date"/> <br />
+	</ul>
+	<button type="submit">Submit</button>
+</form>
