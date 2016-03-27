@@ -8,8 +8,12 @@ from inventory.models import *
 
 
 def item_open(request, item_id):
+	"""
+	Action to assign an opening date to an item.
+	"""
 	item = get_object_or_404(Item, pk=item_id)
 	
+	#if the user did not select either "today" or a custom date for opening
 	if not 'choice' in request.POST.keys():
 		print "No Choice"
 		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id)))
