@@ -1,3 +1,10 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css", href="{% static 'inventory/style.css' %}" />
+
+<font size="5"  color="white">
+<h1>The Following Items are in the Database:</h1>
+
 {% if item_list %}
 	<ul>
 	{% for item in item_list %}
@@ -31,3 +38,5 @@
 {% else %}
 	<p>No items are in the inventory.</p>
 {% endif %}
+
+</font>
