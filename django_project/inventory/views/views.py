@@ -5,6 +5,7 @@ from datetime import date
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.views import generic
 
 from inventory.models import *
 
@@ -15,32 +16,28 @@ def inventory_greeter(request):
 	context = {}
 	return render(request, template, context)
 
-def inventory_index(request):
-	items = Item.objects.order_by('printed_expiration_date')
-	template = 'inventory/inventory_index.html'
-	context = {
-		'item_list': items,
-	}
-	return render(request, template, context)
+
+class IndexView(generic.ListView):
+	template_name = 'inventory/inventory_index.html'
+	context_object_name = 'item_list' #name used in the template
+	
+	def get_queryset(self):
+		return Item.objects.order_by('printed_expiration_date')
 
 
-def item_detail(request, item_id):
-	template = 'inventory/item_detail.html'
-	item = get_object_or_404(Item, pk=item_id)
-	context = {
-		'item': item,
-	}
-	return render(request, template, context)
+class ItemDetailView(generic.DetailView):
+	model = Item
+	template_name = 'inventory/item_detail.html'
+	
+	def get_context_data(self, **kwargs):
+		context = super(ItemDetailView, self).get_context_data(**kwargs)
+		print context
+		return context
 
 
-def item_open(request, item_id):
-	template = 'inventory/item_open.html'
-	item = get_object_or_404(Item, pk=item_id)
-	context = {
-		'item': item,
-	}
-	return render(request, template, context)
-
+class ItemOpenView(generic.DetailView):
+	model = Item
+	template_name = 'inventory/item_open.html'
 
 def __test__():
 	print "views test"

@@ -12,11 +12,13 @@ urlpatterns = [
 	#/inventory/
 	url(r'^$', views.inventory_greeter, name='inventory_greeter'),
 	#/inventory/index/
-	url(r'^index/$', views.inventory_index, name='inventory_index'),
+	url(r'^index/$', views.IndexView.as_view(), name='inventory_index'),
 	#/inventory/5/
-	url(r'^(?P<item_id>[0-9]+)/$', views.item_detail, name='item_detail'),
+	#url(r'^(?P<item_id>[0-9]+)/$', views.item_detail, name='item_detail'),
+	url(r'^(?P<pk>[0-9]+)/$', views.ItemDetailView.as_view(), name='item_detail'),
 	#/inventory/5/open/
-	url(r'^(?P<item_id>[0-9]+)/open/$', views.item_open, name='item_open'),
+	#url(r'^(?P<item_id>[0-9]+)/open/$', views.item_open, name='item_open'),
+	url(r'^(?P<pk>[0-9]+)/open/$', views.ItemOpenView.as_view(), name='item_open'),
 	#/inventory/5/open/2016-08-23
 	url(r'^(?P<item_id>[0-9]+)/open/submit/$', 
 	    actions.item_open, name='item_open_submit'),
