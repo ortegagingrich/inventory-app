@@ -1,8 +1,7 @@
-{% load staticfiles %}
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
 
-<link rel="stylesheet" type="text/css", href="{% static 'inventory/style.css' %}" />
-
-<font size="5"  color="white">
 <h1>The Following Items are in the Database:</h1>
 
 {% if item_list %}
