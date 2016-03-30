@@ -2,11 +2,14 @@ from __future__ import unicode_literals
 
 from datetime import date
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 
 class Location(models.Model):
+	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
+	
 	name = models.CharField(max_length = 100)
 	refrigerated = models.BooleanField(default = False)
 	frozen = models.BooleanField(default = False)
@@ -25,6 +28,7 @@ class Location(models.Model):
 
 
 class ItemType(models.Model):
+	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
 	name = models.CharField(max_length = 50)
 	openable = models.BooleanField(default = False)
 	open_expiration_term = models.DurationField()
@@ -34,6 +38,8 @@ class ItemType(models.Model):
 
 
 class Item(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+	
 	item_type = models.ForeignKey(ItemType, on_delete = models.CASCADE)
 	location = models.ForeignKey(Location, on_delete = models.CASCADE)
 	
