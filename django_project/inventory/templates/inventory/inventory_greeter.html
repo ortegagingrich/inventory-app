@@ -2,9 +2,27 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
 
 <h1>Welcome to the Inventory System</h1>
 
-<a href="{% url 'inventory:inventory_index' %}">
-	Click here for a list of all items currently in the system.
-</a>
+{% if not user.is_authenticated %}
+	<div class="basic">
+		{% include "inventory/login_form.html" %}
+	</div>
+{% else %}
+	<h2> Choose an Action </h2>
+	<ul>
+	{% if user.is_staff %}
+		<li><a href="{% url 'inventory:inventory_index' %}">
+			Click here for a list of all items currently in the system.
+		</a></li>
+	{% else %}
+		<li><a href="{% url 'inventory:inventory_index' %}">
+			View Current Items
+		</a></li>
+	{% endif %}
+	</ul>
+{% endif %}

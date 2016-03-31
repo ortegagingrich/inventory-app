@@ -9,10 +9,11 @@ class ItemAdmin(admin.ModelAdmin):
 		'expiration_date',
 	)
 	
-	fieldsets = [
+	"""fieldsets = [
 		(None, {'fields': ['item_type', 'location',]}),
 		('Date Information', {'fields': ['printed_expiration_date', 'opened_date',]}),
 	]
+	"""
 
 admin.site.register(Location)
 admin.site.register(ItemType)

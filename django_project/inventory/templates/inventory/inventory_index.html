@@ -2,6 +2,10 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
 <h1>The Following Items are in the Database:</h1>
 
 {% if item_list %}
@@ -9,6 +13,15 @@
 	{% for item in item_list %}
 		<li>
 			<a href="{% url 'inventory:item_detail' item.id %}">{{item.item_type.name}}</a>
+			
+			{% if user.is_staff %}
+			{% if item.user.get_username %}
+				: Owned by: {{item.user.get_username}}
+			{% else %}
+				: Owned by: [NOBODY]
+			{% endif %}
+			{% endif %}
+			
 			{% if item.expired %}
 				<font color="red">
 				: Expired:

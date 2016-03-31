@@ -1,0 +1,20 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<h2>Login:</h2>
+
+<font color="red">
+	{{ error_message }}
+</font>
+
+<form action="{% url 'inventory:login' %}" method="post">
+	{% csrf_token %}
+	Username:<br> <input type="text" name="username"><br>
+	Password:<br> <input type="password" name="password"><br>
+	<br> <input type="submit" name="submit">
+</form>
+
+<a href="{% url 'inventory:signup' %}">
+	No account yet?  Sign up here.
+</a>

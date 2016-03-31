@@ -1,0 +1,6 @@
+{% if user.is_authenticated %}
+	Welcome {{user.get_username}}.  
+	<a href="{% url 'inventory:logout' %}">
+		[Logout]
+	</a>
+{% endif %}

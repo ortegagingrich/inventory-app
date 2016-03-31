@@ -2,6 +2,10 @@ li a {
 	color: green;
 }
 
+li a:visited {
+	color: green
+}
+
 body {
 	background: #333333;
 }

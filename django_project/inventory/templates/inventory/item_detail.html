@@ -3,13 +3,17 @@
 </div>
 
 <div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<div class="basic">
 	{% include "inventory/item_details_summary.html" %}
 </div>
 
 <h3>Actions:</h3>
 
 <ul>
-	{% if not item.opened %}
+	{% if not item.opened and item.user == user %}
 	<li>
 		<a href="{% url 'inventory:item_open' item.id %}">Open</a>
 	</li>
