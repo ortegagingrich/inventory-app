@@ -19,8 +19,12 @@ urlpatterns = [
 	url(r'^profile/$', views.profile_page, name='profile'),
 	#/inventory/profile/modify/
 	url(r'^profile/modify/$', views.profile_modify, name='profile_modify'),
-	#/inventory/profile/submit/
-	url(r'^profile/submit/$', actions.profile_submit, name='profile_submit'),
+	#/inventory/profile/modify/submit/
+	url(r'^profile/modify/submit/$', actions.profile_submit, name='profile_submit'),
+	#/inventory/profile/password/
+	url(r'^profile/password/$', views.password_modify, name='password_modify'),
+	#/inventory/profile/password/submit/
+	url(r'^profile/password/submit/$', actions.password_change, name='password_submit'),
 	#/inventory/signup/
 	url(r'^signup/$', views.signup_page, name='signup'),
 	#/inventory/signup/submit/

@@ -68,7 +68,29 @@ def profile_submit(request):
 	request.user.last_name = lname
 	
 	return finish(error_messages)
+
+#Change Password
+def password_change(request):
+	error_messages = []
 	
+	tentative_password = request.POST['password']
+	repeat = request.POST['password_repeat']
+	
+	if tentative_password != repeat:
+		error_messages.append('Entered Passwords do not match.')
+	
+	if len(tentative_password) < 6:
+		error_messages.append('Passwords must have at least 6 characters.')
+	
+	#Redirect to the profile page
+	if len(error_messages) == 0:
+		#change password
+		request.user.set_password(tentative_password)
+		request.user.save()
+		
+		error_messages = ['Password Successfully Reset.']
+	return views.profile_page(request, error_messages=error_messages)
+
 
 #signup
 def signup_submit(request):

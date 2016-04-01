@@ -50,6 +50,13 @@ def profile_modify(request):
 	context = {}
 	return render(request, template, context)
 
+def password_modify(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	template = 'inventory/password_modify.html'
+	context = {}
+	return render(request, template, context)
+
 #Views for Inventory objects
 
 class IndexView(generic.ListView):
