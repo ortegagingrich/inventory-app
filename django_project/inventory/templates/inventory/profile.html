@@ -1,0 +1,32 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h2>User Profile</h2>
+
+<ul>
+	<li> Username: <font color="blue">{{ user.get_username }}</font>
+	<li> Email: <font color="blue">{{ user.email }}</font>
+	<li> Name: <font color="blue">{{ user.first_name }} {{ user.last_name }}</font>
+</ul>
+
+{% if error_messages %}
+<font color="red">
+	The following errors occurred when attempting to adjust your profile:
+	<ul>
+	{% for error_message in error_messages %}
+		<li>{{ error_message }}
+	{% endfor %}
+	</ul>
+</font>
+{% endif %}
+
+<h3>Actions:</h3>
+
+<ul>
+	<li> <a href="{% url 'inventory:profile_modify' %}">Modify Profile</a>
+</ul>

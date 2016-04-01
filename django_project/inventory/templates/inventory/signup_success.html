@@ -1,0 +1,18 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+Congratulations.  You have successfully created an account with username "{{username}}".  
+{% if temporary_password %}
+	  <font color="yellow">Your temporary password is "{{temporary_password}}".</font>
+{% endif %}
+<br>
+Please sign in below.
+
+<div class="basic">
+	{% include "inventory/login_form.html" %}
+</div>

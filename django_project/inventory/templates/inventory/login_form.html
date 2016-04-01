@@ -4,9 +4,9 @@
 
 <h2>Login:</h2>
 
-<font color="red">
-	{{ error_message }}
-</font>
+{% if error_message %}
+	<font color="red">{{ error_message }}</font>
+{% endif %}
 
 <form action="{% url 'inventory:login' %}" method="post">
 	{% csrf_token %}

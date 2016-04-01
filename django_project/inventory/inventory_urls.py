@@ -15,10 +15,16 @@ urlpatterns = [
 	url(r'^login/$', actions.login_action, name='login'),
 	#/inventory/logout/
 	url(r'^logout/$', actions.logout_action, name='logout'),
+	#/inventory/profile/
+	url(r'^profile/$', views.profile_page, name='profile'),
+	#/inventory/profile/modify/
+	url(r'^profile/modify/$', views.profile_modify, name='profile_modify'),
+	#/inventory/profile/submit/
+	url(r'^profile/submit/$', actions.profile_submit, name='profile_submit'),
 	#/inventory/signup/
-	url(r'^signup/$', views.signup, name='signup'),
+	url(r'^signup/$', views.signup_page, name='signup'),
 	#/inventory/signup/submit/
-	url(r'^signup/$', actions.signup_submit, name='signup_submit'),
+	url(r'^signup/submit/$', actions.signup_submit, name='signup_submit'),
 	#/inventory/index/
 	url(r'^index/$', views.IndexView.as_view(), name='inventory_index'),
 	#/inventory/5/

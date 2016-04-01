@@ -1,0 +1,19 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h2>User Profile</h2>
+
+<form action="{% url 'inventory:profile_submit' %}" method="post">
+	{% csrf_token %}
+	Username: <font color="blue">{{ user.get_username }}</font> <br>
+	Email: <input type="text" name="email" value="{{ user.email }}"><br>
+	First Name: <input type="text" name="first_name" value="{{ user.first_name }}"><br>
+	Last Name: <input type="text" name="last_name" value="{{ user.last_name }}"><br>
+	
+	<br> <input type="submit" name="submit">
+</form>

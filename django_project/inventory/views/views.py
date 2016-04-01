@@ -20,25 +20,37 @@ def inventory_greeter(request):
 
 #login page
 def login_page(request, error_message=None):
-	if error_message == None:
-		error_message = ''
-	
 	template = 'inventory/login_form.html'
 	context = {
 		'error_message': error_message,
 	}
 	return render(request, template, context)
 
-def signup(request, error_message=None):
-	if error_message == None:
-		error_message = ''
-	
+def signup_page(request, error_message=None):
 	template = 'inventory/signup_form.html'
 	context = {
 		'error_message': error_message,
 	}
 	return render(request, template, context)
 
+#account profile
+def profile_page(request, error_messages=None):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	template = 'inventory/profile.html'
+	context = {
+		'error_messages': error_messages,
+	}
+	return render(request, template, context)
+
+def profile_modify(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	template = 'inventory/profile_modify.html'
+	context = {}
+	return render(request, template, context)
+
+#Views for Inventory objects
 
 class IndexView(generic.ListView):
 	template_name = 'inventory/inventory_index.html'

@@ -2,4 +2,21 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
 <h2>Signup:</h2>
+
+{% if error_message %}
+	<font color="red">{{ error_message }}</font> <br>
+{% endif %}
+
+Please enter the fields below.  (* Required Field)
+
+<form action="{% url 'inventory:signup_submit' %}" method="post">
+	{% csrf_token %}
+	Username*:<br> <input type="text" name="username"><br>
+	Email Address*:<br> <input type="text" name="email"><br>
+	<br> <input type="submit" name="submit">
+</form>
