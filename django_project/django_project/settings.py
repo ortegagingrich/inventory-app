@@ -15,13 +15,27 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-#TODO: generate this automatically per deployment
-SECRET_KEY = '5!ym#9ooxnp_npm5ub8+#lre6uc)h^l5$!p@cnju3c6*lb^m3g'
+# See if a secret key has already been generated.  If not, generate it.
+try:
+	from secret import SECRET_KEY
+except ImportError:
+	import os
+	
+	from django.utils.crypto import get_random_string
+	
+	print('Generating a new secret key.')
+	
+	chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+	newkey = get_random_string(50, chars)
+	
+	settings_dir = os.path.abspath(os.path.dirname(__file__))
+	with open(os.path.join(settings_dir, 'secret.py'), 'w') as keyfile:
+		keycmd = r"SECRET_KEY = '{}'".format(newkey)
+		keyfile.write(keycmd)
+	from secret import SECRET_KEY
 
 #TODO: turn these on in production environment
 #CSRF_COOKIE_SECURE = True
