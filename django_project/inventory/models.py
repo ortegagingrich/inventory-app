@@ -31,7 +31,9 @@ class ItemType(models.Model):
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
 	name = models.CharField(max_length = 50)
 	openable = models.BooleanField(default = False)
-	open_expiration_term = models.DurationField()
+	
+	open_expiration_term = models.DurationField(null=True, blank=True)
+	freezer_expiration_term = models.DurationField(null=True, blank=True)
 	
 	def __str__(self):
 		return self.name
