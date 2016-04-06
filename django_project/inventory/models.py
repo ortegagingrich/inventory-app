@@ -27,7 +27,17 @@ class Location(models.Model):
 		return self.name
 
 
+class OpenGroceryDatabaseEntry(models.Model):
+	grp_id = models.IntegerField()
+	product_brand = models.CharField(max_length = 50)
+	product_name = models.CharField(max_length = 100)
+	product_upc = models.BigIntegerField()
+	
+
+
 class ItemType(models.Model):
+	open_grocery_entry = models.ForeignKey(OpenGroceryDatabaseEntry,
+	                           on_delete = models.CASCADE, null=True)
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
 	name = models.CharField(max_length = 50)
 	openable = models.BooleanField(default = False)
