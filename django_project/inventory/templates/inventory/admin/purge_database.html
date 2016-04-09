@@ -1,0 +1,19 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+
+<h2>The following items were purged from the database:</h2>
+
+<ul>
+	{% for item in purged_items %}
+		<li>
+			{{item.user.username}}::{{item}}
+		</li>
+	{% endfor %}
+</ul>
+

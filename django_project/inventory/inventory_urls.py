@@ -5,10 +5,10 @@ URLs related to the inventory system
 from django.conf.urls import url
 from django.views.generic.base import RedirectView
 
-from views import actions_user, actions_item, views
+from views import actions_admin, actions_user, actions_item, views
 
 app_name = 'inventory'
-urlpatterns = [
+user_urlpatterns = [
 	#/inventory/
 	url(r'^$', views.inventory_greeter, name='inventory_greeter'),
 	#/inventory/login/
@@ -42,6 +42,13 @@ urlpatterns = [
 	    actions_item.item_open, name='item_open_submit'),
 ]
 
+admin_urlpatterns = [
+	url(r'^purge/$', actions_admin.purge_database, name='purge_database'),
+	#TODO: temporary: remove the underlying url and its method
+	url(r'^defaults/$', actions_admin.update_defaults, name='update_defaults'),
+]
+
+urlpatterns = user_urlpatterns + admin_urlpatterns
 
 def __test__():
 	print "test"

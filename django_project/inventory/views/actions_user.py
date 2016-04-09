@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 
 from inventory.models import *
+from inventory.user import defaults
 from inventory.views import views
 
 
@@ -33,6 +34,7 @@ def login_action(request):
 def logout_action(request):
 	logout(request)
 	return HttpResponseRedirect(reverse("inventory:inventory_greeter"))
+
 
 #Profile modification
 def profile_submit(request):
@@ -68,6 +70,7 @@ def profile_submit(request):
 	request.user.last_name = lname
 	
 	return finish(error_messages)
+
 
 #Change Password
 def password_change(request):
@@ -128,11 +131,14 @@ def signup_submit(request):
 		return fail('Could not create account.  Please try again.')
 	
 	
-	#Signup success
+	#Signup success; create default database
+	defaults.create_user_defaults(user)
+	
+	#Display Success Page
 	template = 'inventory/signup_success.html'
 	context = {
 		'username': user.username,
-		'temporary_password': user.password,
+		'temporary_password': temporary_password,
 	}
 	return render(request, template, context)
 
