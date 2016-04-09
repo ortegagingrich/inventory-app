@@ -10,9 +10,21 @@ from django.utils.encoding import python_2_unicode_compatible
 class Location(models.Model):
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
 	
-	name = models.CharField(max_length = 100)
-	refrigerated = models.BooleanField(default = False)
-	frozen = models.BooleanField(default = False)
+	name = models.CharField(max_length=100)
+	refrigerated = models.BooleanField(default=False)
+	frozen = models.BooleanField(default=False)
+	
+	def create_from_default(user, default_location):
+		"""
+		Creates a new Location using the provided default location, saves it to
+		the database and returns it.
+		"""
+		n = default_location.name
+		r = default_location.refrigerated
+		f = default_location.frozen
+		new_location = Location(user=user, name=n, refrigerated=r, frozen=f)
+		new_location.save()
+		return new_location
 	
 	@property
 	def temperature(self):
@@ -20,6 +32,29 @@ class Location(models.Model):
 			return "Frozen"
 		elif self.refrigerated:
 			return "Refrigerated"
+		else:
+			return "Room Temperature"
+	
+	def __str__(self):
+		return self.name
+
+
+class LocationDefault(models.Model):
+	"""
+	Class of default locations which serve as 'blueprints' for user-specific
+	locations.
+	"""
+	
+	name = models.CharField(max_length=100)
+	refrigerated = models.BooleanField(default=False)
+	frozen = models.BooleanField(default=False)
+	
+	@property
+	def temperature(self):
+		if self.frozen:
+			return 'Frozen'
+		elif self.refrigerated:
+			return 'Refrigerated'
 		else:
 			return "Room Temperature"
 	

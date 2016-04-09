@@ -16,5 +16,7 @@ class ItemAdmin(admin.ModelAdmin):
 	"""
 
 admin.site.register(Location)
+admin.site.register(LocationDefault)
+
 admin.site.register(ItemType)
 admin.site.register(Item, ItemAdmin)

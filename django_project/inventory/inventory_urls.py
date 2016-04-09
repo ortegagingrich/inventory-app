@@ -39,7 +39,7 @@ urlpatterns = [
 	url(r'^(?P<pk>[0-9]+)/open/$', views.ItemOpenView.as_view(), name='item_open'),
 	#/inventory/5/open/2016-08-23
 	url(r'^(?P<item_id>[0-9]+)/open/submit/$', 
-	    actions_itemg.item_open, name='item_open_submit'),
+	    actions_item.item_open, name='item_open_submit'),
 ]
 
 

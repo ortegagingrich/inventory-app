@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from inventory.models import *
 
 
+
 def item_open(request, item_id):
 	"""
 	Action to assign an opening date to an item.
