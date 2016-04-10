@@ -44,8 +44,6 @@ user_urlpatterns = [
 
 admin_urlpatterns = [
 	url(r'^purge/$', actions_admin.purge_database, name='purge_database'),
-	#TODO: temporary: remove the underlying url and its method
-	url(r'^defaults/$', actions_admin.update_defaults, name='update_defaults'),
 ]
 
 urlpatterns = user_urlpatterns + admin_urlpatterns

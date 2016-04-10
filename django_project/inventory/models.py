@@ -6,6 +6,24 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
+"""
+Important note about the behavior of defaults.
+
+For Locations, it is expected that users will not very much appreciate having
+locations changed on the fly.  It is also expected that if a user modifies a
+default location, they will want it to remain as it is, ignoring updates.  As
+such, Location Defaults are turned into user-specific Locations upon the creation
+of accounts.  These locations are not to be modified afterwards and do not even
+keep reference to their corresponding defaults.  Really defaults are just
+templates that are used to make individual locations for each user.
+
+ItemTypes, on the otherhand, are handled very differently.  Each 'Default' item
+type is just a single item type without an associated user (i.e. null).  This
+type is not modifiable by any user, though any user may add an item of this type
+to the database.  These types are subject to change, but will not be deleted.
+"""
+
+
 """ Locations """
 
 class LocationDefault(models.Model):
@@ -18,29 +36,15 @@ class LocationDefault(models.Model):
 	refrigerated = models.BooleanField(default=False)
 	frozen = models.BooleanField(default=False)
 	
-	@property
-	def temperature(self):
-		if self.frozen:
-			return 'Frozen'
-		elif self.refrigerated:
-			return 'Refrigerated'
-		else:
-			return "Room Temperature"
-	
 	def __str__(self):
 		return self.name
 
 
 class Location(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-	default = models.ForeignKey(LocationDefault, null=True, default=None,
-	                            on_delete=models.SET_DEFAULT)
 	
 	name = models.CharField(max_length=100)
-	name_default = models.CharField(max_length=100, null=True, default=None)
-	
 	refrigerated = models.BooleanField(default=False)
-	
 	frozen = models.BooleanField(default=False)
 	
 	@property
@@ -55,6 +59,7 @@ class Location(models.Model):
 	def __str__(self):
 		return self.name
 
+
 """ Item Types """
 
 class OpenGroceryDatabaseEntry(models.Model):
@@ -62,26 +67,14 @@ class OpenGroceryDatabaseEntry(models.Model):
 	product_brand = models.CharField(max_length = 50)
 	product_name = models.CharField(max_length = 100)
 	product_upc = models.BigIntegerField()
-	
-
-class ItemTypeDefault(models.Model):
-	"""
-	Class of default item types which serve as 'blueprints' for user-specific
-	item types.  Note that these are for non-upc items only.
-	"""
-	
-	name = models.CharField(max_length=150, default='[NAME]')
-	needed_temperature = models.SmallIntegerField(default=2)
-	openable = models.BooleanField(default=False)
-	open_expiration_term = models.DurationField(null=True, blank=True, default=None)
-	freezer_expiration_term = models.DurationField(null=True, blank=True, default=None)
 
 
 class ItemType(models.Model):
 	open_grocery_entry = models.ForeignKey(OpenGroceryDatabaseEntry,
 	                           on_delete = models.CASCADE, null=True, blank=True)
-	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
-	
+	#user is null for default items
+	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True,
+	                         blank=True)
 	
 	name = models.CharField(max_length = 150)
 	
@@ -105,13 +98,14 @@ class ItemType(models.Model):
 	def __str__(self):
 		return self.name
 
+
 """ Items """
 
 class Item(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	
 	location = models.ForeignKey(Location, on_delete = models.CASCADE)
-	item_type = models.ForeignKey(ItemType, on_delete = models.CASCADE)
+	item_type = models.ForeignKey(ItemType, on_delete = models.PROTECT)
 	
 	
 	
@@ -129,6 +123,10 @@ class Item(models.Model):
 		super(Item, self).__setattr__(k, v)
 		if k in ['location_id', 'opened_date']:
 			self.on_state_change()
+	
+	@property
+	def properly_stored(self):
+		return not self._improperly_stored
 	
 	@property
 	def improperly_stored(self):
@@ -207,9 +205,3 @@ class Item(models.Model):
 		return self.item_type.name
 
 
-
-def __test__():
-	print "inventory models test"
-
-if __name__ == '__main__':
-	__test__()

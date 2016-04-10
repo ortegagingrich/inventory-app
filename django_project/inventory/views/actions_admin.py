@@ -13,18 +13,6 @@ def _verify_admin(request):
 	return user.is_staff and user.is_active and user.is_authenticated()
 
 
-def update_defaults(request):
-	#TODO: temporary: remove this tool
-	from inventory.user import defaults
-	
-	if not _verify_admin(request):
-		raise Http404()
-	
-	defaults.update_all_defaults()
-	
-	return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
-
-
 """
 Danger Zone!!!
 """
