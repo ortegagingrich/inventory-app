@@ -69,7 +69,12 @@ class ItemTypeDefault(models.Model):
 	Class of default item types which serve as 'blueprints' for user-specific
 	item types.  Note that these are for non-upc items only.
 	"""
-	pass
+	
+	name = models.CharField(max_length=150, default='[NAME]')
+	needed_temperature = models.SmallIntegerField(default=2)
+	openable = models.BooleanField(default=False)
+	open_expiration_term = models.DurationField(null=True, blank=True, default=None)
+	freezer_expiration_term = models.DurationField(null=True, blank=True, default=None)
 
 
 class ItemType(models.Model):
@@ -78,7 +83,7 @@ class ItemType(models.Model):
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
 	
 	
-	name = models.CharField(max_length = 50)
+	name = models.CharField(max_length = 150)
 	
 	"""
 	needed_temperature values:
@@ -89,7 +94,7 @@ class ItemType(models.Model):
 	"""
 	needed_temperature = models.SmallIntegerField(default=2)
 	
-	openable = models.BooleanField(default = False)
+	openable = models.BooleanField(default=False)
 	open_expiration_term = models.DurationField(null=True, blank=True)
 	freezer_expiration_term = models.DurationField(null=True, blank=True)
 	
