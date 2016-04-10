@@ -37,9 +37,11 @@ user_urlpatterns = [
 	#/inventory/5/open/
 	#url(r'^(?P<item_id>[0-9]+)/open/$', views.item_open, name='item_open'),
 	url(r'^(?P<pk>[0-9]+)/open/$', views.ItemOpenView.as_view(), name='item_open'),
-	#/inventory/5/open/2016-08-23
+	#/inventory/5/open/submit/
 	url(r'^(?P<item_id>[0-9]+)/open/submit/$', 
 	    actions_item.item_open, name='item_open_submit'),
+	#/inventory/5/delete/
+	url(r'^(?P<item_id>[0-9]+)/delete/$', actions_item.item_delete, name='item_delete'),
 ]
 
 admin_urlpatterns = [

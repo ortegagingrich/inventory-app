@@ -12,11 +12,7 @@ def item_open(request, item_id):
 	"""
 	Action to assign an opening date to an item.
 	"""
-	item = get_object_or_404(Item, pk=item_id)
-	
-	#check that the user really has the authority to do this
-	if item.user != request.user:
-		raise Http404()
+	item = _get_allowed_item_or_404(request, item_id)
 	
 	#if the user did not select either "today" or a custom date for opening
 	if not 'choice' in request.POST.keys():
@@ -41,3 +37,31 @@ def item_open(request, item_id):
 	#return HttpResponse("Opening item {}.".format(item_id))
 	#return item_detail(request, item_id)
 	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id)))
+
+
+def item_delete(request, item_id):
+	"""
+	Action to remove the specified item from the database.
+	"""
+	item = _get_allowed_item_or_404(request, item_id)
+	
+	item.delete()
+	
+	return HttpResponseRedirect(reverse("inventory:inventory_index"))
+		
+
+
+def _get_allowed_item_or_404(request, item_id):
+	"""
+	Attempts to retrieve an item with the given id.  If no such item exists, or
+	if the requesting user does not have authority, a 404 is raised.
+	"""
+	item = get_object_or_404(Item, pk=item_id)
+	
+	#Verify the user's authority
+	if item.user != request.user or not request.user.is_authenticated():
+		raise Http404()
+	
+	return item
+
+

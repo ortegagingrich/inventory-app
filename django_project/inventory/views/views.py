@@ -83,7 +83,8 @@ class ItemDetailView(generic.DetailView):
 	template_name = 'inventory/item_detail.html'
 	
 	def dispatch(self, request, *args, **kwargs):
-		owner = Item.objects.get(pk=kwargs['pk']).user
+		item = get_object_or_404(Item, pk=kwargs['pk'])
+		owner = item.user
 		if request.user != owner and not request.user.is_staff:
 			raise Http404
 		return super(ItemDetailView, self).dispatch(request, *args, **kwargs)

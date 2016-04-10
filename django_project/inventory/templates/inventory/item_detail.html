@@ -18,6 +18,11 @@
 		<a href="{% url 'inventory:item_open' item.id %}">Open</a>
 	</li>
 	{% endif %}
+	{% if item.user == user %}
+	<li>
+		<a href="{% url 'inventory:item_delete' item.id %}">Delete</a>
+	</li>
+	{% endif %}
 	<li>
 		<a href="{% url 'inventory:inventory_index' %}">Return to Index</a>
 	</li>
