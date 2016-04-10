@@ -7,9 +7,10 @@ from inventory.models import *
 
 def update_all_defaults():
 	"""
-	Updates all default database entries
+	Updates all default database entries.
 	
-	Should not be called too often.
+	Should not be called too often; performance scales very poorly with the size
+	of the userbase.
 	"""
 	update_all_default_locations()
 	#TODO: update other defaults
@@ -17,7 +18,10 @@ def update_all_defaults():
 
 def update_all_default_locations():
 	"""
-	Calls update_default_location for all default locations
+	Calls update_default_location for all default locations.
+	
+	Should not be called too often; performance scales very poorly with the size
+	of the userbase.
 	"""
 	for default_location in LocationDefault.objects.all():
 		update_default_location(default_location)
@@ -34,7 +38,8 @@ def update_default_location(default_location):
 	"""
 	default_set = Location.objects.filter(default=default_location)
 	for location in default_set:
-		if location.name == location.name_default:
+		#If location.name_default is None, the field was added since the last update.
+		if location.name_default in [location.name, None]:
 			location.name = default_location.name
 			location.name_default = default_location.name
 		location.save()

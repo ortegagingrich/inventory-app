@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-
+""" Locations """
 
 class LocationDefault(models.Model):
 	"""
@@ -37,7 +37,7 @@ class Location(models.Model):
 	                            on_delete=models.SET_DEFAULT)
 	
 	name = models.CharField(max_length=100)
-	name_default = models.CharField(max_length=100, null=True)
+	name_default = models.CharField(max_length=100, null=True, default=None)
 	
 	refrigerated = models.BooleanField(default=False)
 	
@@ -55,6 +55,7 @@ class Location(models.Model):
 	def __str__(self):
 		return self.name
 
+""" Item Types """
 
 class OpenGroceryDatabaseEntry(models.Model):
 	grp_id = models.IntegerField()
@@ -63,29 +64,66 @@ class OpenGroceryDatabaseEntry(models.Model):
 	product_upc = models.BigIntegerField()
 	
 
+class ItemTypeDefault(models.Model):
+	"""
+	Class of default item types which serve as 'blueprints' for user-specific
+	item types.  Note that these are for non-upc items only.
+	"""
+	pass
+
 
 class ItemType(models.Model):
 	open_grocery_entry = models.ForeignKey(OpenGroceryDatabaseEntry,
-	                           on_delete = models.CASCADE, null=True)
+	                           on_delete = models.CASCADE, null=True, blank=True)
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True)
-	name = models.CharField(max_length = 50)
-	openable = models.BooleanField(default = False)
 	
+	
+	name = models.CharField(max_length = 50)
+	
+	"""
+	needed_temperature values:
+		0: Does not need to be refrigerated
+		1: Only needs refrigeration when opened
+		2: Always needs refrigeration
+		3: Always needs to be frozen
+	"""
+	needed_temperature = models.SmallIntegerField(default=2)
+	
+	openable = models.BooleanField(default = False)
 	open_expiration_term = models.DurationField(null=True, blank=True)
 	freezer_expiration_term = models.DurationField(null=True, blank=True)
+	
+	@property
+	def is_generic(self):
+		return open_grocery_entry == None
 	
 	def __str__(self):
 		return self.name
 
+""" Items """
 
 class Item(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	
+	#indicates that at some point, the item was improperly stored.
+	improperly_stored = models.BooleanField(default=False)
+	
 	item_type = models.ForeignKey(ItemType, on_delete = models.CASCADE)
-	location = models.ForeignKey(Location, on_delete = models.CASCADE)
+	
+	#the date when the item was placed in its last location; if null
+	location_date = models.DateField(null=True)
 	
 	printed_expiration_date = models.DateField(blank=True)
 	opened_date = models.DateField(null=True, blank=True)
+	
+	location = models.ForeignKey(Location, on_delete = models.CASCADE)
+	
+	
+	def __setattr__(self, k, v):
+		super(Item, self).__setattr__(k, v)
+		if k in ['location_id']:
+			self.on_location_change()
+	
 	
 	@property
 	def expired(self):
@@ -101,7 +139,14 @@ class Item(models.Model):
 		Computes the actual expiration date, assuming the item is stored in its
 		current conditions indefinitely.
 		"""
+		
+		#first, check for immediate disqualifications (improper storage)
+		if self.improperly_stored:
+			return min(self.location_date, date.today()) - timedelta(days=1)
+		
+		
 		modified_date = self.printed_expiration_date
+		
 		
 		if self.item_type.openable and self.opened:
 			base_date = self.opened_date
@@ -109,6 +154,36 @@ class Item(models.Model):
 			modified_date = min(base_date + term, modified_date)
 		
 		return min(self.printed_expiration_date, modified_date)
+	
+	
+	def on_location_change(self):
+		#Note: the part below might fail for new objects just being created.
+		try:
+			self.location_date = date.today()
+			self.check_improper_storage()
+		except Exception as ex:
+			print(ex)
+	
+	
+	def check_improper_storage(self):
+		"""
+		Checks to see if the item is currently improperly stored.  This should
+		be called whenever the item's location is changed.
+		"""
+		if self.location_date == None:
+			self.location_date = date.today()
+		
+		if not self.improperly_stored:
+			if self.item_type.needed_temperature in [1, 2]: #needs refrigeration
+				if not self.location.refrigerated or self.location.frozen:
+					self.improperly_stored = True
+					self.save()
+			elif self.item_type.needed_temperature == 3: #needs freezer
+				if not self.location.frozen:
+					self.improperly_stored = True
+					self.save()
+		
+		self.save()
 	
 	def __str__(self):
 		return self.item_type.name
