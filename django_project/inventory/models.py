@@ -156,13 +156,18 @@ class Item(models.Model):
 		
 		modified_date = self.printed_expiration_date
 		
-		
 		if self.item_type.openable and self.opened:
 			base_date = self.opened_date
 			term = self.item_type.open_expiration_term
 			modified_date = min(base_date + term, modified_date)
 		
-		return min(self.printed_expiration_date, modified_date)
+		exp_date = min(self.printed_expiration_date, modified_date)
+		
+		#alternate criterion for items frozen before they went bad.
+		if self.location.frozen and self._location_date < exp_date:
+			exp_date = self._location_date + self.item_type.frozen_expiration_term
+		
+		return exp_date
 	
 	
 	def on_state_change(self):
