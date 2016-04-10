@@ -105,25 +105,29 @@ class ItemType(models.Model):
 class Item(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	
-	#indicates that at some point, the item was improperly stored.
-	improperly_stored = models.BooleanField(default=False)
-	
+	location = models.ForeignKey(Location, on_delete = models.CASCADE)
 	item_type = models.ForeignKey(ItemType, on_delete = models.CASCADE)
 	
-	#the date when the item was placed in its last location; if null
-	location_date = models.DateField(null=True)
+	
 	
 	printed_expiration_date = models.DateField(blank=True)
 	opened_date = models.DateField(null=True, blank=True)
 	
-	location = models.ForeignKey(Location, on_delete = models.CASCADE)
+	#Do not change these; they are handled automatically:
+	#indicates that at some point, the item was improperly stored.
+	_improperly_stored = models.BooleanField(default=False)
+	#the date when the item was placed in its last location; if null
+	_location_date = models.DateField(null=True)
 	
 	
 	def __setattr__(self, k, v):
 		super(Item, self).__setattr__(k, v)
-		if k in ['location_id']:
-			self.on_location_change()
+		if k in ['location_id', 'opened_date']:
+			self.on_state_change()
 	
+	@property
+	def improperly_stored(self):
+		return self._improperly_stored
 	
 	@property
 	def expired(self):
@@ -141,8 +145,8 @@ class Item(models.Model):
 		"""
 		
 		#first, check for immediate disqualifications (improper storage)
-		if self.improperly_stored:
-			return min(self.location_date, date.today()) - timedelta(days=1)
+		if self._improperly_stored:
+			return min(self._location_date, date.today()) - timedelta(days=1)
 		
 		
 		modified_date = self.printed_expiration_date
@@ -156,13 +160,16 @@ class Item(models.Model):
 		return min(self.printed_expiration_date, modified_date)
 	
 	
-	def on_location_change(self):
+	def on_state_change(self):
+		"""
+		Executed whenever an item is opened or moved to a new location.
+		"""
 		#Note: the part below might fail for new objects just being created.
 		try:
-			self.location_date = date.today()
+			self._location_date = date.today()
 			self.check_improper_storage()
-		except Exception as ex:
-			print(ex)
+		except:
+			pass
 	
 	
 	def check_improper_storage(self):
@@ -170,18 +177,19 @@ class Item(models.Model):
 		Checks to see if the item is currently improperly stored.  This should
 		be called whenever the item's location is changed.
 		"""
-		if self.location_date == None:
-			self.location_date = date.today()
+		if self._location_date == None:
+			self._location_date = date.today()
 		
-		if not self.improperly_stored:
+		if not self._improperly_stored:
 			if self.item_type.needed_temperature in [1, 2]: #needs refrigeration
 				if not self.location.refrigerated or self.location.frozen:
-					self.improperly_stored = True
-					self.save()
+					if self.item_type.needed_temperature == 2:
+						self._improperly_stored = True
+					elif self.opened:
+						self._improperly_stored = True
 			elif self.item_type.needed_temperature == 3: #needs freezer
 				if not self.location.frozen:
-					self.improperly_stored = True
-					self.save()
+					self._improperly_stored = True
 		
 		self.save()
 	

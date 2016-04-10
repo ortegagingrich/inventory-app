@@ -30,6 +30,9 @@
 	{% endif %}
 	<li>
 		Actual Expiration Date: {{ item.expiration_date }}
+		{% if item.improperly_stored %}
+		  (This item expired early due to improper storage.)
+		{% endif %}
 	</li>
 	{% if item.expired %}
 		</font>
