@@ -2,6 +2,8 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+{% include "inventory/jquery_include.html" %}
+
 <div class="basic">
 	{% include "inventory/inventory_header.html" %}
 </div>
@@ -27,3 +29,7 @@
 		<a href="{% url 'inventory:inventory_index' %}">Return to Index</a>
 	</li>
 </ul>
+
+<script type = "text/javascript">
+	$(document).ready(function(){document.write("Hello Javascript");});
+</script>
