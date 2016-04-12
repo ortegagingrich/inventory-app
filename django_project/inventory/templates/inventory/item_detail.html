@@ -2,8 +2,6 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
-{% include "inventory/jquery_include.html" %}
-
 <div class="basic">
 	{% include "inventory/inventory_header.html" %}
 </div>
@@ -22,7 +20,10 @@
 	{% endif %}
 	{% if item.user == user %}
 	<li>
-		<a href="{% url 'inventory:item_delete' item.id %}">Delete</a>
+		<form action="{% url 'inventory:item_delete' item.id %}" method="post">
+			{% csrf_token %}
+			<input type="submit" value="Delete" onclick="return confirmWindow('Are you sure you wish to delete this item?  This action cannot be undone.')" />
+		</form>
 	</li>
 	{% endif %}
 	<li>
@@ -30,6 +31,8 @@
 	</li>
 </ul>
 
-<script type = "text/javascript">
-	$(document).ready(function(){document.write("Hello Javascript");});
+<script type="text/javascript">
+	function confirmWindow(string){
+		return confirm(string)
+	}
 </script>
