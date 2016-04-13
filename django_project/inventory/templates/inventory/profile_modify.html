@@ -16,4 +16,7 @@
 	Last Name: <input type="text" name="last_name" value="{{ user.last_name }}"><br>
 	
 	<br> <input type="submit" name="submit">
+	
+	<input type="button" value="Cancel"
+	       onclick="location.href='{% url 'inventory:profile' %}'" />
 </form>
