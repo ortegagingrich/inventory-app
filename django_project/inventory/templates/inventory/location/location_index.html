@@ -1,0 +1,30 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h1>Locations</h1>
+
+{% if location_list %}
+	<ul>
+	{% for location in location_list %}
+		<li>
+		{{location.name}} | Temperature: {{location.temperature}}
+		| Contains 
+		{% if location.item_count > 0 %}
+		<a href="{% url 'inventory:location:index' %}">
+		{% endif %}
+		{{location.item_count}} item{{ location.item_count|pluralize }}
+		{% if location.item_count > 0 %}
+		</a>
+		|
+		{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>You have not added any locations.</p>
+{% endif %}

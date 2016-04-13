@@ -56,6 +56,10 @@ class Location(models.Model):
 		else:
 			return "Room Temperature"
 	
+	@property
+	def item_count(self):
+		return len(Item.objects.filter(location=self))
+	
 	def __str__(self):
 		return self.name
 

@@ -2,7 +2,7 @@
 URLs related to the inventory system
 """
 
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
 from views import actions_admin, actions_user, actions_item, views
@@ -11,6 +11,8 @@ app_name = 'inventory'
 user_urlpatterns = [
 	#/inventory/
 	url(r'^$', views.inventory_greeter, name='inventory_greeter'),
+	#/inventory/location/*
+	url(r'^location/', include('inventory.location_urls'), name='location'),
 	#/inventory/login/
 	url(r'^login/$', actions_user.login_action, name='login'),
 	#/inventory/logout/
