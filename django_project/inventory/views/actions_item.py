@@ -16,8 +16,7 @@ def item_open(request, item_id):
 	
 	#if the user did not select either "today" or a custom date for opening
 	if not 'choice' in request.POST.keys():
-		print "No Choice"
-		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id)))
+		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
 	
 	if request.POST['choice'] == "today":
 		open_date = date.today()
@@ -25,10 +24,10 @@ def item_open(request, item_id):
 		other_date = request.POST['open_date']
 		print other_date
 		if other_date == '':
-			return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id)))
+			return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
 		open_date = other_date
 	else:
-		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id)))
+		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
 	
 	if not item.opened:
 		item.opened_date = open_date
@@ -36,7 +35,7 @@ def item_open(request, item_id):
 	
 	#return HttpResponse("Opening item {}.".format(item_id))
 	#return item_detail(request, item_id)
-	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id)))
+	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
 
 
 def item_delete(request, item_id):

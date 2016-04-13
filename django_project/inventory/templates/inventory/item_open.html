@@ -2,13 +2,15 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+{% include "inventory/jquery_include.html" %}
 
 <div class="basic">
 	{% include "inventory/item_details_summary.html" %}
 </div>
 
 <h3>When was this item opened?</h3>
-<form action="{% url 'inventory:item_open_submit' item.id %}" method="post">
+<form onsubmit="return checkFormOpen()" method="post"
+      action="{% url 'inventory:item_open_submit' item.id %}" />
 	{% csrf_token %}
 	<ul>
 		<input type="radio" name="choice" id="choicetoday" value="today"/>
@@ -16,5 +18,43 @@
 		<input type="radio" name="choice" id="choiceother" value="other"/>
 		<input type = "date" name="open_date"/> <br />
 	</ul>
-	<button type="submit">Submit</button>
+	<input type="submit" />
+	<input type="button" value="Cancel"
+	       onclick="location.href='{% url 'inventory:item_detail' item.id %}'" />
 </form>
+
+
+<script type="text/javascript">
+	function checkFormOpen(){try{
+		
+		//Make sure there hase been at least one choice
+		if(!checkChoiceSelected('choice')){
+			alert('Please select the date on which this item was opened.');
+			return false;
+		}
+		
+		var choiceOther = document.getElementById('choiceother');
+		if(choiceOther.checked){
+			var date = document.getElementsByName('open_date')[0].value;
+			if(!Date.parse(date)){
+				alert('Selected date is invalid.');
+				return false;
+			}
+		}
+		
+		return true;
+	}catch(err){alert('something happened');return false;}}
+</script>
+
+
+
+<script type="text/javascript">
+	function checkChoiceSelected(radioName){
+		var element = document.getElementById(radioName);
+		if($('input[name='+radioName+']:checked').length > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+</script>

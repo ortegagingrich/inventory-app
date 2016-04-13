@@ -22,6 +22,6 @@ def redirect_to_inventory(request):
 
 urlpatterns = [
 	url(r'^inventory/', include('inventory.inventory_urls'), name='inventory'),
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^$', redirect_to_inventory),
 ]

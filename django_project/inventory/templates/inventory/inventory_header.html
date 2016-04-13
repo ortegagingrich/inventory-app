@@ -2,6 +2,12 @@
 	[TEMPORARY: TO FRONT PAGE]
 </a>
 
+{% if user.is_staff %}
+<a href="{% url 'admin:index' %}">
+	[ADMIN]
+</a>
+{% endif %}
+
 {% if user.is_authenticated %}
 	Welcome 
 	<a href="{% url 'inventory:profile' %}">
