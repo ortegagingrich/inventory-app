@@ -138,6 +138,17 @@ def rename_submit(request, location_key):
 	else:
 		redirect_url = reverse('inventory:location:detail', args=(location.id,))
 		return HttpResponseRedirect(redirect_url)
+
+
+def delete_submit(request, location_key):
+	location = get_object_or_404(Location, pk=location_key)
 	
+	if request.user != location.user or not request.user.is_authenticated():
+		raise Http404
+	
+	location.delete()
+	
+	redirect_url = reverse('inventory:location:index')
+	return HttpResponseRedirect(redirect_url)
 
 

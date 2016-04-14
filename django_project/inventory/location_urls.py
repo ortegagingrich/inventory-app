@@ -18,4 +18,6 @@ urlpatterns = [
 	url(r'^(?P<location_key>[0-9]+)/$', vl.detail_page, name='detail'),
 	#/inventory/location/1901/rename/
 	url(r'^(?P<location_key>[0-9]+)/rename/$', vl.rename_submit, name='rename'),
+	#/inventory/location/1901/delete/
+	url(r'^(?P<location_key>[0-9]+)/delete/$', vl.delete_submit, name='delete'),
 ]
