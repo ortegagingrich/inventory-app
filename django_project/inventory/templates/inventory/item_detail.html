@@ -27,7 +27,12 @@
 	</li>
 	{% endif %}
 	<li>
-		<a href="{% url 'inventory:inventory_index' %}">Return to Index</a>
+		<a href="{% url 'inventory:location:detail' item.location.id %}">
+			View other Items at the Location ({{item.location.name}})
+		</a>
+	</li>
+	<li>
+		<a href="{% url 'inventory:inventory_index' %}">View all Items</a>
 	</li>
 </ul>
 

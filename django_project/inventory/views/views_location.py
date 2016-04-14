@@ -29,6 +29,9 @@ class IndexView(generic.ListView):
 def detail_page(request, location_key):
 	location = get_object_or_404(Location, pk=location_key)
 	
+	if location.user != request.user and not request.user.is_staff:
+		raise Http404
+	
 	template = 'inventory/location/detail.html'
 	context = {
 		'location': location,

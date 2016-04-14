@@ -13,3 +13,13 @@
 <div class="basic">
 	{% include "inventory/item_list.html" %}
 </div>
+
+<div class="basic">
+	<h3>Actions:</h3>
+
+	<ul>
+		<li><a href="{% url 'inventory:inventory_index' %}">View all Items</a></li>
+		<li><a href="{% url 'inventory:location:index' %}">View all Locations</a></li>
+	</ul>
+</div>
+
