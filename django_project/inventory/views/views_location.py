@@ -26,16 +26,50 @@ class IndexView(generic.ListView):
 
 
 #detail view
-def detail_page(request, location_key):
+def detail_page(request, location_key, error_messages=None):
 	location = get_object_or_404(Location, pk=location_key)
 	
 	if location.user != request.user and not request.user.is_staff:
 		raise Http404
 	
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
 	template = 'inventory/location/detail.html'
 	context = {
 		'location': location,
 		'item_list': Item.objects.filter(location=location),
+		'error_messages': error_messages
 	}
 	return render(request, template, context)
+
+
+#rename
+def rename_submit(request, location_key):
+	location = get_object_or_404(Location, pk=location_key)
+	
+	if location.user != request.user and not request.is_staff:
+		raise Http404
+	
+	error_messages = []
+	
+	try:
+		new_name = request.POST['rename']
+		
+		if len(new_name) < 1:
+			message = 'Cannot rename location "{}" to "{}".  '
+			message += 'Location names must have at least one character.'
+			error_messages.append(message.format(location.name, new_name))
+		elif '\'' in new_name or '\"' in new_name:
+			message = "Names cannot contain apostrophes or quotations."
+			error_messages.append(message)
+		else:
+			location.name = new_name
+			location.save()
+	except:
+		error_messages.append('Please enter a valid name.')
+	
+	return detail_page(request, location_key, error_messages)
+
 

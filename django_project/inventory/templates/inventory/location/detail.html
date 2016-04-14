@@ -2,11 +2,55 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+{% include "inventory/jquery_include.html" %}
+
 <div class="basic">
 	{% include "inventory/inventory_header.html" %}
 </div>
 
-<h1>Location: {{location.name}}</h1>
+<h1>
+	Location: {{ location.name }}
+	<input type="button" id="rename_button" value="Rename"
+	       onclick="showRename('{% location.name %}');">
+</h1>
+
+
+<form method="post" id="rename_form"
+      action="{% url 'inventory:location:rename' location.id %}">
+	{% csrf_token %}
+	
+	<input type="text" name="rename" value="{{ location.name }}" />
+	<input type="submit" />
+	<input type="button" value="Cancel" onclick="hideRename();"/>
+</form>
+
+<script type="text/javascript">
+	function showRename(default_name){
+		
+		var form = document.getElementById("rename_form");
+		var textfield = document.getElementsByName("rename")[0];
+		var button = document.getElementById("rename_button");
+		textfield.value = default_name;
+		form.style.display = "";
+		button.style.display = "none";
+	}
+	
+	function hideRename(){
+		var form = document.getElementById("rename_form");
+		var button = document.getElementById("rename_button");
+		form.style.display = "none";
+		button.style.display = "";
+	}
+	
+	$( document ).ready(function(){
+		hideRename();
+	});
+</script>
+
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
 
 <h3>The Following Items are currently being stored here:</h3>
 
