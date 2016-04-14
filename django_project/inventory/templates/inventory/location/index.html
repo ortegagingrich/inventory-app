@@ -12,7 +12,10 @@
 	<ul>
 	{% for location in location_list %}
 		<li>
-		{{location.name}} | Temperature: {{location.temperature}}
+		<a href="{% url 'inventory:location:detail' location.id %}">
+			{{location.name}}
+		</a> 
+		 | Temperature: {{ location.temperature }}
 		| Contains 
 		{% if location.item_count > 0 %}
 		<a href="{% url 'inventory:location:detail' location.id %}">
@@ -20,12 +23,21 @@
 		{{location.item_count}} item{{ location.item_count|pluralize }}
 		{% if location.item_count > 0 %}
 		</a>
-		|
 		{% endif %}
+		|
 		</li>
 	{% endfor %}
+		<li>
+			<a href="{% url 'inventory:location:create_page' %}">
+				Add another location
+			</a>
+		</li>
 	</ul>
 {% else %}
-	<p>You have not added any locations.</p>
+	<p>You have not added any locations.
+		<a href="{% url 'inventory:location:create_page' %}">
+			Click here to make add one.
+		</a>
+	</p>
 {% endif %}
 

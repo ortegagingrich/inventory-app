@@ -1,0 +1,32 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h2>Create New Location</h2>
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
+
+<form action="{% url 'inventory:location:create_submit' %}" method="post">
+	{% csrf_token %}
+	
+	Location Name: <input type="text" name="name" /><br/>
+	
+	Food Storage Type: <br />
+	<input type="radio" name="temperature" id="temp_f" value="frozen" />
+		<label for="temp_f">Freezer</label><br/>
+	<input type="radio" name="temperature" id="temp_r" value="refrigerated" />
+		<label for="temp_r">Refrigerator</label><br/>
+	<input type="radio" name="temperature" id="temp_t" value="room_temperature" />
+		<label for="temp_t">Room Temperature</label><br/>
+	
+	<input type="submit" name="submit"/>
+	<input type="button" name="cancel" value="Cancel"
+	       onclick="location.href='{% url 'inventory:location:index' %}'" />
+</form>

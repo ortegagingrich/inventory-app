@@ -59,7 +59,7 @@ def _get_allowed_item_or_404(request, item_id):
 	
 	#Verify the user's authority
 	if item.user != request.user or not request.user.is_authenticated():
-		raise Http404()
+		raise Http404
 	
 	return item
 

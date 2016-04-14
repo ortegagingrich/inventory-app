@@ -11,8 +11,12 @@
 <h1>
 	Location: {{ location.name }}
 	<input type="button" id="rename_button" value="Rename"
-	       onclick="showRename('{% location.name %}');">
+	       onclick="showRename('{{ location.name }}');">
 </h1>
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
 
 
 <form method="post" id="rename_form"
@@ -26,7 +30,6 @@
 
 <script type="text/javascript">
 	function showRename(default_name){
-		
 		var form = document.getElementById("rename_form");
 		var textfield = document.getElementsByName("rename")[0];
 		var button = document.getElementById("rename_button");
@@ -48,9 +51,7 @@
 </script>
 
 
-{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
-	<li>{{ message }}</li>
-{% endfor %}</ul></font>{% endif %}
+<h4>Temperature: {{location.temperature}}</h4>
 
 <h3>The Following Items are currently being stored here:</h3>
 

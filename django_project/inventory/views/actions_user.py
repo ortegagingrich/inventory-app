@@ -116,6 +116,9 @@ def signup_submit(request):
 	except ValidationError:
 		return fail('Please enter a valid email address.')
 	
+	if '\'' in username or '\"' in username:
+		return fail('Usernames cannot contain quotations or apostrophes.')
+	
 	#Next, check to make sure that the username is alright
 	if len(username) < 5:
 		return fail('Please enter a username with at least five characters.')

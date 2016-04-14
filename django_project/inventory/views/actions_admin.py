@@ -26,7 +26,7 @@ def purge_database(request):
 	
 	user = request.user
 	if not _verify_admin(request):
-		raise Http404()
+		raise Http404
 	
 	print('About to purge database.')
 	
