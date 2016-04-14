@@ -12,7 +12,7 @@ from inventory.models import *
 
 #Index view
 class IndexView(generic.ListView):
-	template_name = 'inventory/location/location_index.html'
+	template_name = 'inventory/location/index.html'
 	context_object_name = 'location_list'
 	
 	def dispatch(self, request, *args, **kwargs):
@@ -24,4 +24,15 @@ class IndexView(generic.ListView):
 	def get_queryset(self):
 		return Location.objects.filter(user=self.request.user)
 
+
+#detail view
+def detail_page(request, location_key):
+	location = get_object_or_404(Location, pk=location_key)
+	
+	template = 'inventory/location/detail.html'
+	context = {
+		'location': location,
+		'item_list': Item.objects.filter(location=location),
+	}
+	return render(request, template, context)
 

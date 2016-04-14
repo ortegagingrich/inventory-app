@@ -15,7 +15,7 @@
 		{{location.name}} | Temperature: {{location.temperature}}
 		| Contains 
 		{% if location.item_count > 0 %}
-		<a href="{% url 'inventory:location:index' %}">
+		<a href="{% url 'inventory:location:detail' location.id %}">
 		{% endif %}
 		{{location.item_count}} item{{ location.item_count|pluralize }}
 		{% if location.item_count > 0 %}

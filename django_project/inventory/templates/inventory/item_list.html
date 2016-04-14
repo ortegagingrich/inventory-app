@@ -1,0 +1,42 @@
+{% if item_list %}
+	<ul>
+	{% for item in item_list %}
+		<li>
+			<a href="{% url 'inventory:item_detail' item.id %}">{{item.item_type.name}}</a>
+			
+			{% if user.is_staff %}
+			{% if item.user.get_username %}
+				: Owned by: {{item.user.get_username}}
+			{% else %}
+				: Owned by: [NOBODY]
+			{% endif %}
+			{% endif %}
+			
+			{% if item.expired %}
+				<font color="red">
+				: Expired:
+			{% else %}
+				: Expires: 
+			{% endif %}
+			{{item.expiration_date}}
+			{% if item.expired %}
+				</font>
+			{% endif %}
+			
+			{% if item.opened %}
+				{% if item.expired %}
+					<font color="red">
+				{% else %}
+					<font color="green">
+				{% endif %}
+				(Opened on {{item.opened_date}})
+				</font>
+			{% else %}
+				<font color="blue">(Not Opened)</font>
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	<p>There are no items here.</p>
+{% endif %}
