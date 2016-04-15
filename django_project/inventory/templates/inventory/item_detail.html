@@ -27,6 +27,11 @@
 	</li>
 	{% endif %}
 	<li>
+		<a href="{% url 'inventory:type:detail' item.item_type.id %}">
+			View other Items of this Type ({{ item.item_type.name }})
+		</a>
+	</li>
+	<li>
 		<a href="{% url 'inventory:location:detail' item.location.id %}">
 			View other Items at the Location ({{item.location.name}})
 		</a>

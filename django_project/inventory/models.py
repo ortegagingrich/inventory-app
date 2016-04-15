@@ -101,7 +101,11 @@ class ItemType(models.Model):
 	
 	@property
 	def is_custom(self):
-		return self.user != None
+		return self.user != None and self.is_generic
+	
+	@property
+	def item_count(self):
+		return len(Item.objects.filter(item_type=self))
 	
 	def __str__(self):
 		return self.name

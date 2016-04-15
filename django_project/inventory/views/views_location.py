@@ -40,7 +40,7 @@ def detail_page(request, location_key, error_messages=None):
 	context = {
 		'location': location,
 		'item_list': Item.objects.filter(location=location),
-		'error_messages': error_messages
+		'error_messages': error_messages,
 	}
 	return render(request, template, context)
 
@@ -112,7 +112,7 @@ def create_submit(request):
 def rename_submit(request, location_key):
 	location = get_object_or_404(Location, pk=location_key)
 	
-	if location.user != request.user and not request.is_staff:
+	if location.user != request.user and not request.user.is_staff:
 		raise Http404
 	
 	error_messages = []

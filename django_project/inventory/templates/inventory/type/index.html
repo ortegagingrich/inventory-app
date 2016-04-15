@@ -6,13 +6,17 @@
 	{% include "inventory/inventory_header.html" %}
 </div>
 
-<h1>Custom Item Types:</h1>
+<h1>Item Type Categories:</h1>
 
-{% if type_list %}
+
+<h2>Custom Item Types:</h2>
+
+{% if custom_type_list %}
 	<ul>
-	{% for type in type_list %}
+	{% for type in custom_type_list %}
 		<li>
-			{{type.name}}
+			<a href="{% url 'inventory:type:detail' type.id %}">{{type.name}}</a>
+			({{type.item_count}} item{{ type.item_count|pluralize }})
 		</li>
 	{% endfor %}
 		<li>
@@ -25,4 +29,35 @@
 	</p>
 {% endif %}
 
+
+<h2>Branded Item Types:</h2>
+
+(Note: Only Branded Items that you currently own are shown here.)
+
+{% if branded_type_list %}
+	<ul>
+	{% for type in branded_type_list %}
+		{% if type.item_count > 0 %}<li>
+			<a href="{% url 'inventory:type:detail' type.id %}">{{type.name}}</a>
+			({{type.item_count}} item{{ type.item_count|pluralize }})
+		</li>{% endif %}
+	{% endfor %}
+	</ul>
+{% endif %}
+
+
+<h2>Default Item Types:</h2>
+
+(Note: Only Default Items that you currently own are shown here.)
+
+{% if default_type_list %}
+	<ul>
+	{% for type in default_type_list %}
+		{% if type.item_count > 0 %}<li>
+			<a href="{% url 'inventory:type:detail' type.id %}">{{type.name}}</a>
+			({{type.item_count}} item{{ type.item_count|pluralize }})
+		</li>{% endif %}
+	{% endfor %}
+	</ul>
+{% endif %}
 
