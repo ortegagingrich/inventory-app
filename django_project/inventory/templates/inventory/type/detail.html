@@ -61,6 +61,48 @@
 </script>
 {% endif %}
 
+<h3>Information:</h3>
+
+<ul>
+	{% if type.needed_temperature == 1 %}
+	<li><font color="orange">
+		Must be kept refrigerated once opened
+	</font></li>
+	{% elif type.needed_temperature == 2 %}
+	<li><font color="orange">
+		Must be kept refrigerated at all times
+	</font></li>
+	{% elif type.needed_temperature == 3 %}
+	<li><font color="blue">
+		Must be kept frozen at all times
+	</font></li>
+	{% endif %}
+	{% if type.open_expiration_term %}
+	<li><font color="orange">
+		Must be used within {{type.open_expiration_term.days}}
+		day{{ type.open_expiration_term.days|pluralize }} of opening
+	</font></li>
+	{% endif %}
+	{% if type.freezer_expiration_term %}
+	<li><font color="blue">
+		Lasts
+		{% if type.freezer_expiration_term.months %}
+			{{type.freezer_expiration_term.months}}
+			month{{type.freezer_expiration_term.months|pluralize}}
+		{% endif %}
+		{% if type.freezer_expiration_term.weeks %}
+			{{type.freezer_expiration_term.weeks}}
+			week{{type.freezer_expiration_term.weeks|pluralize}}
+		{% endif %}
+		{% if type.freezer_expiration_term.days %}
+			{{type.freezer_expiration_term.days}}
+			day{{type.freezer_expiration_term.days|pluralize}}
+		{% endif %}
+		if stored in a freezer.
+	</font></li>
+	{% endif %}
+</ul>
+
 
 <h3>You currently have the following items of this type:</h3>
 
