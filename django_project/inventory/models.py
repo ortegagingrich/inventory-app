@@ -97,7 +97,11 @@ class ItemType(models.Model):
 	
 	@property
 	def is_generic(self):
-		return open_grocery_entry == None
+		return self.open_grocery_entry == None
+	
+	@property
+	def is_custom(self):
+		return self.user != None
 	
 	def __str__(self):
 		return self.name

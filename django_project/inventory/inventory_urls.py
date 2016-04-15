@@ -13,6 +13,8 @@ user_urlpatterns = [
 	url(r'^$', views.inventory_greeter, name='inventory_greeter'),
 	#/inventory/location/*
 	url(r'^location/', include('inventory.location_urls'), name='location'),
+	#/inventory/type/
+	url(r'^type/', include('inventory.type_urls'), name='type'),
 	#/inventory/login/
 	url(r'^login/$', actions_user.login_action, name='login'),
 	#/inventory/logout/

@@ -1,0 +1,28 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h1>Custom Item Types:</h1>
+
+{% if type_list %}
+	<ul>
+	{% for type in type_list %}
+		<li>
+			{{type.name}}
+		</li>
+	{% endfor %}
+		<li>
+			Add another custom type
+		</li>
+	</ul>
+{% else %}
+	<p>You have not added any custom item types.
+		Click here to add one.
+	</p>
+{% endif %}
+
+
