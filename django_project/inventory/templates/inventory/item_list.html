@@ -12,6 +12,13 @@
 			{% endif %}
 			{% endif %}
 			
+			{% if item.location %}
+				: Location: 
+				<a href="{% url 'inventory:location:detail' item.location.id %}">
+					{{ item.location.name }}
+				</a>
+			{% endif %}
+			
 			{% if item.expired %}
 				<font color="red">
 				: Expired:
