@@ -91,7 +91,7 @@ def create_submit(request):
 			refrigerated = True
 		elif temp == 'room_temperature':
 			frozen = False
-			refrigerated = True
+			refrigerated = False
 		else:
 			error_messages.append('Could not create location.  No temperature was selected.')
 	
