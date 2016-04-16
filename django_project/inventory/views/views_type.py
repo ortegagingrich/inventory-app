@@ -164,8 +164,6 @@ def create_submit(request):
 			message = 'Please indicate if the item lasts longer when frozen'
 			error_messages.append(message)
 	
-	
-	
 	if len(error_messages) > 0:
 		return create_page(request, error_messages)
 	
