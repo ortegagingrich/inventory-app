@@ -16,15 +16,7 @@
 <form action="{% url 'inventory:location:create_submit' %}" method="post">
 	{% csrf_token %}
 	
-	Location Name: <input type="text" name="name" /><br/>
-	
-	Food Storage Type: <br />
-	<input type="radio" name="temperature" id="temp_f" value="frozen" />
-		<label for="temp_f">Freezer</label><br/>
-	<input type="radio" name="temperature" id="temp_r" value="refrigerated" />
-		<label for="temp_r">Refrigerator</label><br/>
-	<input type="radio" name="temperature" id="temp_t" value="room_temperature" />
-		<label for="temp_t">Room Temperature</label><br/>
+	{% include "inventory/location/create_form.html" %}
 	
 	<input type="submit" name="submit"/>
 	<input type="button" name="cancel" value="Cancel"

@@ -5,13 +5,99 @@
 {% include "inventory/jquery_include.html" %}
 
 <div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+
+<div class="basic">
 	{% include "inventory/item_details_summary.html" %}
 </div>
 
-<h3>When was this item opened?</h3>
-<form onsubmit="return checkFormOpen()" method="post"
-      action="{% url 'inventory:item_open_submit' item.id %}" />
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
+
+<form onsubmit="return checkFormOpen()" method="post" action="{% url 'inventory:item_open_submit' item.id %}">
 	{% csrf_token %}
+
+{% if item.item_type.needed_temperature == 1 and not item.location.refrigerated %}
+	<font color="red"><h3>
+		This item must be refrigerated once it is opened.  Please select an option
+		below indicating where it will now be stored.
+	</h3></font>
+	<ul>
+		{% if location_list %}
+		<input type="radio" name="refrigerator" id="loc_sel" value="existing"
+		       onclick="location_toggle();"/>
+			<label for="loc_sel">Choose an existing refrigerator</label><br/>
+			
+			<div class="basic" id="ext_ref_form">
+				<select id="location_list" name="location_list">
+					<option value="" selected="selected">
+						---Select a Location---
+					</option>
+				{% for location in location_list %}
+					<option value="{{location.id}}">
+						{{location.name}}
+					</option>
+				{% endfor %}
+				</select>
+			</div>
+		{% else %}
+			<font color="orange">No existing refrigerators.</font><br/>
+		{% endif %}
+		<input type="radio" name="refrigerator" id="loc_new" value="new"
+		       onclick="location_toggle();"/>
+			<label for="loc_new">Add a new refrigerator</label><br/>
+			<ul><div class="basic" id="new_ref_form">
+				{% include 'inventory/location/create_form.html' %}
+			</div></ul>
+		
+		
+		
+		<script type="text/javascript">
+			function location_toggle(){
+				var refrigerator = $('input[name="refrigerator"]:checked').val();
+				
+				{% if location_list %}
+				var ext_form = document.getElementById("ext_ref_form");
+				if(refrigerator === "existing"){
+					show(ext_form);
+				}else{
+					hide(ext_form);
+				}
+				{% endif %}
+				
+				var new_form = document.getElementById("new_ref_form");
+				if(refrigerator === "new"){
+					show(new_form);
+				}else{
+					hide(new_form);
+				}
+			}
+			
+			$( document ).ready(function(){
+				location_toggle();
+			});
+		</script>
+		
+		<script type="text/javascript">
+			function hide(element){
+				element.style.display = "none";
+			}
+			
+			function show(element){
+				element.style.display = "";
+			}
+		</script>
+	</ul>
+	
+{% endif %}
+
+	
+	<h3>When was this item opened?</h3>
 	<ul>
 		<input type="radio" name="choice" id="choicetoday" value="today"/>
 			<label for="choicetoday">Today</label> <br />
@@ -20,7 +106,7 @@
 	</ul>
 	<input type="submit" />
 	<input type="button" value="Cancel"
-	       onclick="location.href='{% url 'inventory:item_detail' item.id %}'" />
+	       onclick="location.href='{% url 'inventory:item_detail' item.id %}'"/>
 </form>
 
 
@@ -58,3 +144,4 @@
 		}
 	}
 </script>
+

@@ -65,6 +65,21 @@ def create_submit(request):
 	if not request.user.is_authenticated():
 		raise Http404
 	
+	(location, error_messages) = create_location(request)
+	
+	if location == None:
+		return create_page(request, error_messages)
+	
+	redirect_url = reverse('inventory:location:detail', args=(location.id,))
+	return HttpResponseRedirect(redirect_url)
+
+
+def create_location(request):
+	"""
+	Attempts to return a location using the given request.
+	Returns a tuple containing the new location (or None, if unsuccessful) and
+	a list of error messages
+	"""
 	error_messages = []
 	
 	try:
@@ -95,17 +110,15 @@ def create_submit(request):
 		else:
 			error_messages.append('Could not create location.  No temperature was selected.')
 	
-	
 	if len(error_messages) > 0:
-		return create_page(request, error_messages)
+		location = None
+	else:
+		#finally, create and save location
+		location = Location(user=request.user, name=name, frozen=frozen,
+	              	        refrigerated = refrigerated)
+		location.save()
 	
-	#finally, create and save location
-	location = Location(user=request.user, name=name, frozen=frozen,
-	                    refrigerated = refrigerated)
-	location.save()
-	
-	redirect_url = reverse('inventory:location:detail', args=(location.id,))
-	return HttpResponseRedirect(redirect_url)
+	return (location, error_messages)
 
 
 #rename

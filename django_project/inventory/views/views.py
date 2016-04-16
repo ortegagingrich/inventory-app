@@ -3,6 +3,7 @@ Basic Views for the Inventory System
 """
 from datetime import date
 
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views import generic
@@ -95,8 +96,26 @@ class ItemDetailView(generic.DetailView):
 		return context
 
 
-class ItemOpenView(ItemDetailView):
-	template_name = 'inventory/item_open.html'
+def item_open_page(request, item_id, error_messages = None):
+	item = get_object_or_404(Item, pk=item_id)
+	if request.user != item.user or not request.user.is_authenticated():
+		raise Http404
+	
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
+	refrigerated_list = Location.objects.filter(user=request.user)
+	refrigerated_list = refrigerated_list.filter(Q(refrigerated=True) | Q(frozen=True))
+	
+	template = 'inventory/item_open.html'
+	context = {
+		'item': item,
+		'error_messages': error_messages,
+		'location_list': refrigerated_list
+	}
+	return render(request, template, context)
+
 
 def __test__():
 	print "views test"

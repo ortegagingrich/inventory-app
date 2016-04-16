@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 
 from inventory.models import *
+from inventory.views import views, views_location
 
 
 
@@ -14,20 +15,56 @@ def item_open(request, item_id):
 	"""
 	item = _get_allowed_item_or_404(request, item_id)
 	
+	error_messages = []
+	
+	
+	#change of location, if needed
+	if item.item_type.needed_temperature == 1 and not item.location.refrigerated:
+		try:
+			refrigerator_choice = request.POST['refrigerator']
+			if refrigerator_choice == 'existing':
+				location_id = int(request.POST['location_list'])
+				item.location = Location.objects.get(pk=location_id)
+				item.save()
+			elif refrigerator_choice == 'new':
+				(location, location_errors) = views_location.create_location(request)
+				if location != None:
+					item.location = location
+					item.save()
+					if not (location.refrigerated or location.frozen):
+						message = 'The item is still not in a refrigerated location.'
+						error_messages.append(message)
+				else:
+					error_messages += location_errors
+			else:
+				raise Exception
+			
+		except:
+			message = 'Please choose a refrigerated location to move this item to.'
+			error_messages.append(message)
+	
+	
 	#if the user did not select either "today" or a custom date for opening
 	if not 'choice' in request.POST.keys():
-		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
+		message = 'Please select the date upon which this item was opened.'
+		error_messages.append(message)
 	
 	if request.POST['choice'] == "today":
 		open_date = date.today()
 	elif request.POST['choice'] == "other":
 		other_date = request.POST['open_date']
-		print other_date
 		if other_date == '':
-			return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
+			message = 'Please select the date upon which this item was opened.'
+			error_messages.append(message)
 		open_date = other_date
 	else:
-		return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
+		message = 'Please select the date upon which this item was opened.'
+		error_messages.append(message)
+	
+	
+	if len(error_messages) > 0:
+		return views.item_open_page(request, item_id, error_messages)
+	
 	
 	if not item.opened:
 		item.opened_date = open_date

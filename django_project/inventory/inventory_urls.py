@@ -40,7 +40,7 @@ user_urlpatterns = [
 	url(r'^(?P<pk>[0-9]+)/$', views.ItemDetailView.as_view(), name='item_detail'),
 	#/inventory/5/open/
 	#url(r'^(?P<item_id>[0-9]+)/open/$', views.item_open, name='item_open'),
-	url(r'^(?P<pk>[0-9]+)/open/$', views.ItemOpenView.as_view(), name='item_open'),
+	url(r'^(?P<item_id>[0-9]+)/open/$', views.item_open_page, name='item_open'),
 	#/inventory/5/open/submit/
 	url(r'^(?P<item_id>[0-9]+)/open/submit/$', 
 	    actions_item.item_open, name='item_open_submit'),
