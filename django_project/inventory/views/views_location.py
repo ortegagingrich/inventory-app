@@ -70,9 +70,9 @@ def create_submit(request):
 	try:
 		name = request.POST['name']
 		if len(name) < 1:
-			message = 'Cannot rename location "{}" to "{}".  '
+			message = 'Cannot name location "{}".  '
 			message += 'Location names must have at least one character.'
-			error_messages.append(message.format(location.name, new_name))
+			error_messages.append(message.format(name))
 		elif '\'' in name or '\"' in name:
 			message = "Names cannot contain apostrophes or quotations."
 			error_messages.append(message)

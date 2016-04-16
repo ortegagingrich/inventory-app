@@ -20,12 +20,16 @@
 		</li>
 	{% endfor %}
 		<li>
-			Add another custom type
+			<a href="{% url 'inventory:type:create_page' %}">
+				Add another custom type
+			</a>
 		</li>
 	</ul>
 {% else %}
 	<p>You have not added any custom item types.
-		Click here to add one.
+		<a href="{% url 'inventory:type:create_page' %}">
+			Click here to add one.
+		</a>
 	</p>
 {% endif %}
 

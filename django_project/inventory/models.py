@@ -74,7 +74,7 @@ class OpenGroceryDatabaseEntry(models.Model):
 
 
 class ItemType(models.Model):
-	open_grocery_entry = models.ForeignKey(OpenGroceryDatabaseEntry,
+	open_grocery_entry = models.ForeignKey(OpenGroceryDatabaseEntry, default=None,
 	                           on_delete = models.CASCADE, null=True, blank=True)
 	#user is null for default items
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True,

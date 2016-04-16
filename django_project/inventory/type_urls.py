@@ -10,9 +10,9 @@ app_name = 'type'
 urlpatterns=[
 	url(r'^$', vt.index_page, name='index'),
 	#/inventory/type/new/
-	#url(r'^new/$', vt.create_page, name='create_page'),
+	url(r'^new/$', vt.create_page, name='create_page'),
 	#/inventory/type/new/submit/
-	#url(r'^new/submit/', vt.create_submit, name='create_submit'),
+	url(r'^new/submit/', vt.create_submit, name='create_submit'),
 	#/inventory/type/1901/
 	url(r'^(?P<type_key>[0-9]+)/$', vt.detail_page, name='detail'),
 	#/inventory/type/1901/rename/
