@@ -175,7 +175,9 @@ class Item(models.Model):
 		
 		#alternate criterion for items frozen before they went bad.
 		if self.location.frozen and self._location_date < exp_date:
-			exp_date = self._location_date + self.item_type.frozen_expiration_term
+			exp_term = self.item_type.freezer_expiration_term
+			if exp_term != None:
+				exp_date = self._location_date + self.item_type.freezer_expiration_term
 		
 		return exp_date
 	
@@ -202,7 +204,7 @@ class Item(models.Model):
 		
 		if not self._improperly_stored:
 			if self.item_type.needed_temperature in [1, 2]: #needs refrigeration
-				if not self.location.refrigerated or self.location.frozen:
+				if not (self.location.refrigerated or self.location.frozen):
 					if self.item_type.needed_temperature == 2:
 						self._improperly_stored = True
 					elif self.opened:
