@@ -1,0 +1,12 @@
+<div class="basic" id="ext_ref_form">
+	<select id="location_list" name="location_list">
+		<option value="" selected="selected">
+			---Select a Location---
+		</option>
+	{% for location in location_list %}
+		<option value="{{location.id}}">
+			{{location.name}}
+		</option>
+	{% endfor %}
+	</select>
+</div>
