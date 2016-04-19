@@ -1,0 +1,22 @@
+[
+	{
+		"model": "inventory.opengrocerydatabaseentry",
+		"pk": null,
+		"fields": {
+			"grp_id": 1,
+			"product_brand": "Jacob Inc.",
+			"product_name": "product 1",
+			"product_upc": 123456
+		}
+	},
+	{
+		"model": "inventory.opengrocerydatabaseentry",
+		"pk": null,
+		"fields": {
+			"grp_id": 2,
+			"product_brand": "Jacob Inc.",
+			"product_name": "product 2",
+			"product_upc": 654321
+		}
+	}
+]
