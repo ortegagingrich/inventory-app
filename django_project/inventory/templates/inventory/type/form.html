@@ -1,0 +1,199 @@
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
+<form action="{% url 'inventory:type:create_submit' %}" method="post">
+	{% csrf_token %}
+	
+	<p>Please complete all of the items below.</p>
+	<ul>
+		
+		<li id="q1">
+		Which of the following best describes items of this type? <br />
+		<input type="radio" name="openable" id="open_false" value="no" 
+		       onclick="hide_unhide()" />
+			<label for="open_false">
+			Individually Packaged or Single Serving (e.g. String Cheese, etc.)
+			</label><br />
+		<input type="radio" name="openable" id="open_true" value="yes"
+		       onclick="hide_unhide()" />
+			<label for="open_true">
+			Openable package with multiple servings (e.g. Large Juice Bottle, Milk Carton, etc.)
+			</label><br />
+		</li>
+		
+		<li id="q2">
+		How long do items of this type last after they are opened? <br />
+		<input type="radio" name="open_term" id="ot_unl" value="unlimited"
+		       onclick="hide_unhide()" />
+			<label for="ot_unl">
+			Until the printed expiration date
+			</label><br />
+		<input type="radio" name="open_term" id="ot_1w" value="week"
+		       onclick="hide_unhide()" />
+			<label for="ot_1w">
+			One Week
+			</label><br />
+		<input type="radio" name="open_term" id="ot_5d" value="5day"
+		       onclick="hide_unhide()" />
+			<label for="ot_5d">
+			Five Days
+			</label><br />
+		<input type="radio" name="open_term" id="ot_3d" value="3day"
+		       onclick="hide_unhide()" />
+			<label for="ot_3d">
+			Three Days
+			</label><br />
+		<input type="radio" name="open_term" id="ot_ot" value="other"
+		       onclick="hide_unhide()" />
+			<label for="ot_ot">
+			Other: <input type="text" name="open_term_other" value="1" size="4" /> day(s).
+			</label><br />
+		</li>
+		
+		<li id="q3">
+		Do items of this type require refrigeration? <br />
+		<input type="radio" name="refrigeration" id="r_f" value="3" 
+		       onclick="hide_unhide()" />
+			<label for="r_f">
+			They must always be kept frozen.
+			</label><br />
+		<input type="radio" name="refrigeration" id="r_a" value="2" 
+		       onclick="hide_unhide()" />
+			<label for="r_a">
+			They must always be refrigerated.
+			</label><br />
+		<div class="basic" id="only_open">
+		<input type="radio" name="refrigeration" id="r_o" value="1" 
+		       onclick="hide_unhide()" />
+			<label for="r_o">
+			They need be refrigerated only when opened.
+			</label><br />
+		</div>
+		<input type="radio" name="refrigeration" id="r_n" value="0"
+		       onclick="hide_unhide()" /></input>
+			<label for="r_n">
+			They never need to be refrigerated.
+			</label><br />
+		</li>
+		
+		<li id="q4">
+		Do items of this type last longer when frozen? <br />
+		<input type="radio" name="freezable" id="f_n" value="no" 
+		       onclick="hide_unhide()" />
+			<label for="f_n">
+			No.
+			</label><br />
+		<input type="radio" name="freezable" id="f_y" value="yes" 
+		       onclick="hide_unhide()" />
+			<label for="f_y">
+			Yes.  How long?
+			<input type="text" name="freeze_months" value="3" size="2" /> month(s),
+			<input type="text" name="freeze_weeks" value="0" size="2" /> week(s),
+			<input type="text" name="freeze_days" value="0" size="2" /> day(s) 
+			</label><br />
+		</li>
+		
+		<li id="qname">Item Type Name: <input type="text" name="name" /></li>
+	</ul>
+	
+	
+	<input type="submit" name="submit" id="submit" />
+	<input type="button" name="cancel" value="Cancel"
+	       onclick="location.href='{% url 'inventory:type:index' %}'" />
+</form>
+
+
+<script type="text/javascript">
+	function hide_unhide(){
+		var openable = $('input[name="openable"]:checked').val();
+		var open_term = $('input[name="open_term"]:checked').val();
+		var refrigeration = $('input[name="refrigeration"]:checked').val();
+		
+		var q2 = document.getElementById("q2");
+		if(openable === 'yes'){
+			show(q2);
+		}else{
+			hide(q2);
+		}
+		
+		var q3 = document.getElementById("q3");
+		var onlyopen = document.getElementById("only_open");
+		if(open_term != undefined || openable === 'no'){
+			show(q3);
+			if(openable === 'yes'){
+				show(onlyopen);
+			}else{
+				hide(onlyopen);
+			}
+		}else{
+			hide(q3);
+		}
+		
+		var q4 = document.getElementById("q4");
+		if(refrigeration != "3" && refrigeration != undefined){
+			show(q4);
+		}else{
+			hide(q4);
+		}
+		
+		
+		var qname = document.getElementById("qname");
+		var submit = document.getElementById("submit");
+		if(checkForm()){
+			show(qname);
+			show(submit);
+		}else{
+			hide(qname);
+			hide(submit);
+		}
+	}
+	
+	function hide(element){
+		element.style.display = "none";
+	}
+	
+	function show(element){
+		element.style.display = "";
+	}
+	
+	function checkForm(){
+		//either freezing must be mandatory (q3, choice 1) or q4 answered
+		var q1_answer = $('input[name="openable"]:checked').val();
+		var q2_answer = $('input[name="open_term"]:checked').val();
+		var q3_answer = $('input[name="refrigeration"]:checked').val();
+		var q4_answer = $('input[name="freezable"]:checked').val();
+		
+		q1_status = false;
+		q2_status = false;
+		q3_status = false;
+		q4_status = false;
+		
+		if(q1_answer != undefined){
+			q1_status = true;
+		}
+		
+		if(q2_answer != undefined || q1_answer === "no"){
+			q2_status = true;
+		}
+		
+		if(q3_answer != undefined){
+			q3_status = true;
+		}
+		
+		if(q4_answer != undefined || q3_answer === "3"){
+			q4_status = true
+		}
+		
+		
+		if(q1_status && q2_status && q3_status && q4_status){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	$( document ).ready(function(){
+		hide_unhide();
+	});
+</script>
