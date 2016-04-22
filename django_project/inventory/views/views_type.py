@@ -76,10 +76,31 @@ def create_page(request, error_messages=None):
 	return render(request, template, context)
 
 
+#modify page (almost identical to create page, except submits to modify url)
+def modify_page(request, type_key, error_messages=None):
+	item_type = get_object_or_404(ItemType, pk=type_key)
+	
+	if item_type.user != request.user or not request.user.is_authenticated:
+		raise Http404
+	
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
+	template = 'inventory/type/modify.html'
+	context = {
+		'type': item_type,
+		'error_messages': error_messages,
+	}
+	return render(request, template, context)
+
+
 #create
-def create_submit(request):
+def create_submit(request, item_type=None):
 	"""
-	Note: this is only for creating custom types
+	Note: this is only for creating or modifying custom or upc types.
+	If the provided item type is None, a new one is created, otherwise,
+	the provided one is modified.
 	"""
 	if not request.user.is_authenticated():
 		raise Http404
@@ -165,17 +186,26 @@ def create_submit(request):
 			error_messages.append(message)
 	
 	if len(error_messages) > 0:
-		return create_page(request, error_messages)
+		if item_type == None:
+			return create_page(request, error_messages)
+		else:
+			return modify_page(request, item_type.id, error_messages)
 	
-	
-	item_type = ItemType(
-		user = request.user,
-		name = name,
-		needed_temperature = needed_temperature,
-		openable = openable,
-		open_expiration_term = open_term,
-		freezer_expiration_term = frozen_term,
-	)
+	if item_type == None:
+		item_type = ItemType(
+			user = request.user,
+			name = name,
+			needed_temperature = needed_temperature,
+			openable = openable,
+			open_expiration_term = open_term,
+			freezer_expiration_term = frozen_term,
+		)
+	else:
+		item_type.name = name
+		item_type.needed_temperature = needed_temperature
+		item_type.openable = openable
+		item_type.open_expiration_term = open_term
+		item_type.freezer_expiration_term = frozen_term
 	
 	item_type.save()
 	
