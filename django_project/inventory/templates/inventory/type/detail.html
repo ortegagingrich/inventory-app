@@ -114,6 +114,13 @@
 	<h3>Actions:</h3>
 
 	<ul>
+		{% if user == type.user %}
+		<li>
+			<a href="{% url 'inventory:type:modify_page' type.id %}">
+				Modify Expiration/Storage Properties
+			</a>
+		</li>
+		{% endif %}
 		{% if not read_only %}
 		<li>
 			<form action="{% url 'inventory:type:delete' type.id %}" method="post">

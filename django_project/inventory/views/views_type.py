@@ -213,6 +213,13 @@ def create_submit(request, item_type=None):
 	return HttpResponseRedirect(redirect_url)
 
 
+#modify submit
+def modify_submit(request, type_key):
+	item_type = get_object_or_404(ItemType, pk=type_key)
+	
+	return create_submit(request, item_type)
+
+
 #rename
 def rename_submit(request, type_key):
 	item_type = get_object_or_404(ItemType, pk=type_key)

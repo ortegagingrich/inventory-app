@@ -17,6 +17,10 @@ urlpatterns=[
 	url(r'^(?P<type_key>[0-9]+)/$', vt.detail_page, name='detail'),
 	#/inventory/type/1901/rename/
 	url(r'^(?P<type_key>[0-9]+)/rename/$', vt.rename_submit, name='rename'),
+	#/inventory/type/1901/modify/
+	url(r'^(?P<type_key>[0-9]+)/modify/$', vt.modify_page, name='modify_page'),
+	#/inventory/type/1901/modify/submit
+	url(r'^(?P<type_key>[0-9]+)/modify/submit$', vt.modify_submit, name='modify'),
 	#/inventory/type/1901/delete/
 	url(r'^(?P<type_key>[0-9]+)/delete/$', vt.delete_submit, name='delete'),
 ]
