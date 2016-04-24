@@ -178,7 +178,6 @@ def create_submit(request, item_type=None):
 				weeks = int(request.POST['freeze_weeks'])
 				days = int(request.POST['freeze_days'])
 				frozen_term = timedelta(weeks=(weeks+4*months), days=days)
-				print(frozen_term)
 			else:
 				raise Exception
 		except:
