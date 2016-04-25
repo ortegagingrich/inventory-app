@@ -105,7 +105,10 @@ class ItemType(models.Model):
 	
 	@property
 	def item_count(self):
-		return len(Item.objects.filter(item_type=self))
+		if self.user == None:
+			return None
+		else:
+			return self.len(Item.objects.filter(item_type=self)
 	
 	def __str__(self):
 		return self.name

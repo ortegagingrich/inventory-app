@@ -59,7 +59,6 @@
 	{% for type in default_type_list %}
 		{% if type.item_count > 0 %}<li>
 			<a href="{% url 'inventory:type:detail' type.id %}">{{type.name}}</a>
-			({{type.item_count}} item{{ type.item_count|pluralize }})
 		</li>{% endif %}
 	{% endfor %}
 	</ul>
