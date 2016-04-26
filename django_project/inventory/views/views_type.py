@@ -21,12 +21,25 @@ def index_page(request):
 	branded_type_list = ItemType.objects.filter(user=request.user,
 	                                           open_grocery_entry__isnull=False)
 	
-	template = 'inventory/type/index.html'
+	#construct dicts for context
+	default_dict_list = []
+	for default_type in default_type_list.order_by('name'):
+		new_dict = {
+			'type': default_type,
+			'count': default_type.item_count_generic(request.user)
+		}
+		default_dict_list.append(new_dict)
+	
+	print default_dict_list
+	
 	context = {
 		'custom_type_list': custom_type_list.order_by('name'),
-		'default_type_list': default_type_list.order_by('name'),
 		'branded_type_list': branded_type_list.order_by('name'),
+		'default_type_dict_list': default_dict_list,
 	}
+	
+	template = 'inventory/type/index.html'
+	
 	return render(request, template, context)
 
 

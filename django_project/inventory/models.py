@@ -108,7 +108,10 @@ class ItemType(models.Model):
 		if self.user == None:
 			return None
 		else:
-			return self.len(Item.objects.filter(item_type=self)
+			return len(Item.objects.filter(item_type=self))
+	
+	def item_count_generic(self, user):
+		return len(Item.objects.filter(item_type=self, user=user))
 	
 	def __str__(self):
 		return self.name

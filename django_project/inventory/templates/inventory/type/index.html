@@ -54,11 +54,12 @@
 
 (Note: Only Default Items that you currently own are shown here.)
 
-{% if default_type_list %}
+{% if default_type_dict_list %}
 	<ul>
-	{% for type in default_type_list %}
-		{% if type.item_count > 0 %}<li>
-			<a href="{% url 'inventory:type:detail' type.id %}">{{type.name}}</a>
+	{% for dict in default_type_dict_list %}
+		{% if dict.count > 0 %}<li>
+			<a href="{% url 'inventory:type:detail' dict.type.id %}">{{dict.type.name}}</a>
+			({{dict.count}} item{{ dict.count|pluralize }})
 		</li>{% endif %}
 	{% endfor %}
 	</ul>
