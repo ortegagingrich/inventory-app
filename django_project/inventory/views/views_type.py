@@ -30,7 +30,6 @@ def index_page(request):
 		}
 		default_dict_list.append(new_dict)
 	
-	print default_dict_list
 	
 	context = {
 		'custom_type_list': custom_type_list.order_by('name'),

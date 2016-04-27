@@ -116,6 +116,3 @@ def item_open_page(request, item_id, error_messages = None):
 	}
 	return render(request, template, context)
 
-
-def __test__():
-	print "views test"
