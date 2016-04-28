@@ -22,4 +22,4 @@ admin.site.register(ItemType)
 admin.site.register(Item, ItemAdmin)
 
 #TODO: Temporary
-admin.site.register(OpenGroceryDatabaseEntry)
+#admin.site.register(OpenGroceryDatabaseEntry)
