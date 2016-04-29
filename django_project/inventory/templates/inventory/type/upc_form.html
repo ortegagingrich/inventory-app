@@ -1,0 +1,25 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
+
+<h1>Please Enter the UPC code of the product below and press submit.</h1>
+
+<form method="post" action="{% url 'inventory:type:upc_lookup' %}">
+	{% csrf_token %}	
+	
+	<input type="text" name="upc_code" value="00000000000000" size="14" /> <br />
+	
+	<input type="submit" name="submit" id="submit">
+	<input type="button" name="cancel" value="Cancel"
+	       onclick="location.href='{% url 'inventory:type:index' %}'">
+</form>
+

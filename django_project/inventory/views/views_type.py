@@ -72,6 +72,42 @@ def detail_page(request, type_key, error_messages=None):
 	return render(request, template, context)
 
 
+#page with form for upc lookup
+def upc_page(request, error_messages=None):
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
+	template = 'inventory/type/upc_form.html'
+	context = {
+		'error_messages': error_messages,
+	}
+	return render(request, template, context)
+
+
+#TODO: TEMPORARY redirect
+def upc_lookup(request):
+	error_messages = ['trololo']
+	
+	
+	upc_code = request.POST['upc_code']
+	try:
+		open_grocery_entry = OpenGroceryDatabaseEntry.objects.get(product_upc=upc_code)
+		print open_grocery_entry.product_name
+	except OpenGroceryDatabaseEntry.DoesNotExist:
+		open_grocery_entry = None
+		message = 'No Product with UPC code "{}".'.format(upc_code)
+		error_messages.append(message)
+	
+	#TODO: Do Stuff Here
+	
+	if len(error_messages) > 0:
+		return upc_page(request, error_messages)
+	
+	#TODO:
+	raise Http404
+
+
 #create page
 def create_page(request, error_messages=None):
 	if error_messages != None:
