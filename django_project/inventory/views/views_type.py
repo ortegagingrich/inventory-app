@@ -73,7 +73,7 @@ def detail_page(request, type_key, error_messages=None):
 
 
 #page with form for upc lookup
-def upc_page(request, error_messages=None):
+def upc_page(request, error_messages=None, default_value=None):
 	if error_messages != None:
 		if len(error_messages) == 0:
 			error_messages = None
@@ -81,6 +81,7 @@ def upc_page(request, error_messages=None):
 	template = 'inventory/type/upc_form.html'
 	context = {
 		'error_messages': error_messages,
+		'default_value': default_value,
 	}
 	return render(request, template, context)
 
@@ -102,7 +103,7 @@ def upc_lookup(request):
 	#TODO: Do Stuff Here
 	
 	if len(error_messages) > 0:
-		return upc_page(request, error_messages)
+		return upc_page(request, error_messages, upc_code)
 	
 	#TODO:
 	raise Http404

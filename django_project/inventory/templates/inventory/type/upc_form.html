@@ -11,12 +11,14 @@
 {% endfor %}</ul></font>{% endif %}
 
 
-<h1>Please Enter the UPC code of the product below and press submit.</h1>
+<h1>Please Enter the UPC code of the product below.</h1>
 
 <form method="post" action="{% url 'inventory:type:upc_lookup' %}">
 	{% csrf_token %}	
 	
-	<input type="text" name="upc_code" value="00000000000000" size="14" /> <br />
+	<input type="text" name="upc_code" size="14" 
+	value="{% if default_value %}{{default_value}}{% else %}00000000000000{% endif %}"
+	/> <br />
 	
 	<input type="submit" name="submit" id="submit">
 	<input type="button" name="cancel" value="Cancel"
