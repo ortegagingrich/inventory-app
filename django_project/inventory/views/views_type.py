@@ -87,7 +87,7 @@ def upc_page(request, error_messages=None, default_value=None):
 
 
 def upc_lookup(request):
-	error_messages = ['trololo']
+	error_messages = []
 	
 	
 	upc_code = request.POST['upc_code']
