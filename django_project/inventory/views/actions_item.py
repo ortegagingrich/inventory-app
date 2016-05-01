@@ -8,12 +8,76 @@ from inventory.models import *
 from inventory.views import views, views_location
 
 
+def item_create_page(request, type_key, error_messages=None):
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
+	#TODO: stuff here
+
+
+def item_create_submit(request, type_key):
+	"""
+	View to which item creation forms submit
+	"""
+	if not request.user.is_authenticated():
+		raise Http404
+	
+	error_messages = ['trololo']
+	
+	
+	item_type = get_object_or_404(ItemType, pk=type_key)
+	if not item_type.user in [None, request.user]:
+		raise Http404
+	
+	try:
+		location_id = request.POST['location_id']
+		location = Location.objects.get(pk=location_id)
+	except:
+		message = 'Please select a valid location.'
+		error_messages.append(message)
+	
+	try:
+		exp_date_option = request.POST['exp_date_option']
+		if exp_date_option == 'none':
+			printed_expiration_date = None
+		elif exp_date_option == 'date':
+			date = request.POST['exp_date']
+			if date == '':
+				raise Exception
+			else:
+				printed_expiration_date = date
+		else:
+			raise Exception
+	except:
+		message = 'Please select a valid expiration date.'
+		error_messages.append(message)
+	
+	
+	if len(error_messages) > 0:
+		return item_create_page(request, type_id, error_messages)
+	
+	
+	#create the item
+	new_item = Item(
+		user=request.user,
+		location=location,
+		item_type=item_type,
+		printed_expiration_date=printed_expiration_date,
+	)
+	new_item.save()
+	
+	
+	#redirect to the item's detail page
+	redirect_url = reverse('inventory:item_detail', args=(new_item.id,))
+	return HttpResponseRedirect(redirect_url)
+
 
 def item_open(request, item_id):
 	"""
 	Action to assign an opening date to an item.
 	"""
-	item = _get_allowed_item_or_404(request, item_id)
+	item = _get_allowed_item_or_404(request, pk=item_id)
 	
 	error_messages = []
 	

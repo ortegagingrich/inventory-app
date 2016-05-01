@@ -17,7 +17,7 @@ of accounts.  These locations are not to be modified afterwards and do not even
 keep reference to their corresponding defaults.  Really defaults are just
 templates that are used to make individual locations for each user.
 
-ItemTypes, on the otherhand, are handled very differently.  Each 'Default' item
+ItemTypes, on the other hand, are handled very differently.  Each 'Default' item
 type is just a single item type without an associated user (i.e. null).  This
 type is not modifiable by any user, though any user may add an item of this type
 to the database.  These types are subject to change, but will not be deleted.
@@ -127,7 +127,7 @@ class Item(models.Model):
 	
 	
 	
-	printed_expiration_date = models.DateField(blank=True)
+	printed_expiration_date = models.DateField(blank=True, null=True)
 	opened_date = models.DateField(null=True, blank=True)
 	
 	#Do not change these; they are handled automatically:
@@ -152,7 +152,10 @@ class Item(models.Model):
 	
 	@property
 	def expired(self):
-		return date.today() > self.expiration_date
+		if self.expiration_date != None:
+			return date.today() > self.expiration_date
+		else:
+			return self._improperly_stored
 	
 	@property
 	def opened(self):
@@ -164,6 +167,8 @@ class Item(models.Model):
 		Computes the actual expiration date, assuming the item is stored in its
 		current conditions indefinitely.
 		"""
+		if self.printed_expiration_date == None:
+			return None
 		
 		#first, check for immediate disqualifications (improper storage)
 		if self._improperly_stored:

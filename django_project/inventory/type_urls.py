@@ -5,6 +5,7 @@ ItemType URLs; included by inventory_urls
 from django.conf.urls import url
 
 from views import views_type as vt
+from views import actions_item as vi
 
 app_name = 'type'
 urlpatterns=[
@@ -27,4 +28,9 @@ urlpatterns=[
 	url(r'^(?P<type_key>[0-9]+)/modify/submit$', vt.modify_submit, name='modify_submit'),
 	#/inventory/type/1901/delete/
 	url(r'^(?P<type_key>[0-9]+)/delete/$', vt.delete_submit, name='delete'),
+	#/inventory/type/1901/new/
+	url(r'^(?P<type_key>[0-9]+)/new/$', vi.item_create_page, name='item_create_page'),
+	#/inventory/type/1901/new/submit/
+	url(r'^(?P<type_key>[0-9]+)/new/submit/$', vi.item_create_submit, 
+	    name='item_create_submit'),
 ]
