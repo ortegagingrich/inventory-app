@@ -2,7 +2,7 @@
 	<li>{{ message }}</li>
 {% endfor %}</ul></font>{% endif %}
 
-<form action="{% url 'inventory:type:create_submit' %}" method="post">
+<form action="{{submit_url}}" method="post">
 	{% csrf_token %}
 	
 	<p>Please complete all of the items below.</p>
@@ -141,7 +141,7 @@
 		var qname = document.getElementById("qname");
 		var submit = document.getElementById("submit");
 		if(checkForm()){
-			show(qname);
+			{% if not type %}show(qname);{% endif %}
 			show(submit);
 		}else{
 			hide(qname);

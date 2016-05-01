@@ -86,7 +86,6 @@ def upc_page(request, error_messages=None, default_value=None):
 	return render(request, template, context)
 
 
-#TODO: TEMPORARY redirect
 def upc_lookup(request):
 	error_messages = ['trololo']
 	
@@ -94,16 +93,26 @@ def upc_lookup(request):
 	upc_code = request.POST['upc_code']
 	try:
 		open_grocery_entry = OpenGroceryDatabaseEntry.objects.get(product_upc=upc_code)
-		print open_grocery_entry.product_name
 	except OpenGroceryDatabaseEntry.DoesNotExist:
 		open_grocery_entry = None
 		message = 'No Product with UPC code "{}".'.format(upc_code)
 		error_messages.append(message)
 	
-	#TODO: Do Stuff Here
-	
 	if len(error_messages) > 0:
 		return upc_page(request, error_messages, upc_code)
+	
+	
+	#check to see if there is already an ItemType for this user and UPC code
+	try:
+		item_type = ItemType.objects.get(
+			user=request.user,
+			open_grocery_entry=open_grocery_entry
+		)
+	except ItemType.DoesNotExist:
+		item_type = None
+	
+	
+	
 	
 	#TODO:
 	raise Http404
@@ -118,9 +127,12 @@ def create_page(request, error_messages=None):
 	if not request.user.is_authenticated():
 		raise Http404
 	
+	submit_url = reverse('inventory:type:create_submit')
+	
 	template = 'inventory/type/create.html'
 	context = {
 		'error_messages': error_messages,
+		'submit_url': submit_url,
 	}
 	return render(request, template, context)
 
@@ -136,10 +148,13 @@ def modify_page(request, type_key, error_messages=None):
 		if len(error_messages) == 0:
 			error_messages = None
 	
+	submit_url = reverse('inventory:type:modify_submit', kwargs={'type_key': type_key})
+	
 	template = 'inventory/type/modify.html'
 	context = {
 		'type': item_type,
 		'error_messages': error_messages,
+		'submit_url': submit_url,
 	}
 	return render(request, template, context)
 
@@ -158,7 +173,7 @@ def create_submit(request, item_type=None):
 	
 	try:
 		name = request.POST['name']
-		if len(name) < 1:
+		if len(name) < 1 and item_type == None:
 			message = 'Cannot give item type name "{}".  '
 			message += 'Item Type names must have at least one character.'
 			error_messages.append(message.format(name))
@@ -249,7 +264,6 @@ def create_submit(request, item_type=None):
 			freezer_expiration_term = frozen_term,
 		)
 	else:
-		item_type.name = name
 		item_type.needed_temperature = needed_temperature
 		item_type.openable = openable
 		item_type.open_expiration_term = open_term
