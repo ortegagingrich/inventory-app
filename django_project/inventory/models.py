@@ -75,7 +75,7 @@ class OpenGroceryDatabaseEntry(models.Model):
 
 class ItemType(models.Model):
 	open_grocery_entry = models.ForeignKey(OpenGroceryDatabaseEntry, default=None,
-	                           on_delete = models.CASCADE, null=True, blank=True)
+	                           on_delete=models.CASCADE, null=True, blank=True)
 	#user is null for default items
 	user = models.ForeignKey(User, on_delete = models.CASCADE, null=True,
 	                         blank=True)
@@ -123,7 +123,7 @@ class Item(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	
 	location = models.ForeignKey(Location, on_delete = models.CASCADE)
-	item_type = models.ForeignKey(ItemType, on_delete = models.PROTECT)
+	item_type = models.ForeignKey(ItemType, on_delete = models.CASCADE)
 	
 	
 	
