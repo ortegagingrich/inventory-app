@@ -112,10 +112,22 @@ def upc_lookup(request):
 		item_type = None
 	
 	
+	if item_type != None:
+		if item_type.needed_temperature < 5:
+			redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
+			return HttpResponseRedirect(redirect_url)
+	else:
+		#create user-specific item
+		item_type = ItemType(
+			user=request.user,
+			open_grocery_entry=open_grocery_entry,
+			name=open_grocery_entry.product_name,
+			needed_temperature=100, #nonsense placeholder
+		)
+		item_type.save()
 	
-	
-	#TODO:
-	raise Http404
+	redirect_url = reverse('inventory:type:modify_page', args=(item_type.id,))
+	return HttpResponseRedirect(redirect_url)
 
 
 #create page
