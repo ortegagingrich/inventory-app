@@ -1,7 +1,7 @@
 from datetime import date
 
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 
 from inventory.models import *
@@ -13,7 +13,22 @@ def item_create_page(request, type_key, error_messages=None):
 		if len(error_messages) == 0:
 			error_messages = None
 	
-	#TODO: stuff here
+	if not request.user.is_authenticated():
+		raise Http404
+	
+	item_type = get_object_or_404(ItemType, pk=type_key)
+	if not item_type.user in [None, request.user]:
+		raise Http404
+	
+	location_list = Location.objects.filter(user=request.user)
+	
+	template = 'inventory/item_add.html'
+	context = {
+		'error_messages': error_messages,
+		'type': item_type,
+		'location_list': location_list,
+	}
+	return render(request, template, context)
 
 
 def item_create_submit(request, type_key):
@@ -23,7 +38,7 @@ def item_create_submit(request, type_key):
 	if not request.user.is_authenticated():
 		raise Http404
 	
-	error_messages = ['trololo']
+	error_messages = []
 	
 	
 	item_type = get_object_or_404(ItemType, pk=type_key)
@@ -31,7 +46,7 @@ def item_create_submit(request, type_key):
 		raise Http404
 	
 	try:
-		location_id = request.POST['location_id']
+		location_id = int(request.POST['location_list'])
 		location = Location.objects.get(pk=location_id)
 	except:
 		message = 'Please select a valid location.'
@@ -55,7 +70,7 @@ def item_create_submit(request, type_key):
 	
 	
 	if len(error_messages) > 0:
-		return item_create_page(request, type_id, error_messages)
+		return item_create_page(request, type_key, error_messages)
 	
 	
 	#create the item

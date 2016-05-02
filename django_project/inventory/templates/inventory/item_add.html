@@ -2,6 +2,60 @@
 	{% include "inventory/set_style.html" %}
 </div>
 
+{% include "inventory/jquery_include.html" %}
+
 <div class="basic">
 	{% include "inventory/inventory_header.html" %}
 </div>
+
+
+
+<h1>Create New Item:</h1>
+<h3>Type: {{type.name}}</h3>
+
+
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
+<form action="{% url 'inventory:type:item_create_submit' type.id %}" method="post">
+	{% csrf_token %}
+	
+	Choose a Location:
+	{% if location_list %}
+		{% include "inventory/location/select.html" %}
+	{% else %}
+		<br />
+		<font color="orange">
+			You currently have no locations. You must 
+			<a href="{% url 'inventory:location:create_page' %}">create one</a> 
+			before you can add an item.
+		</font>
+		<script type="text/javascript">
+			$( document ).ready(function(){
+				var submit = document.getElementById("submit");
+				submit.style.display = "none";
+			});
+		</script>
+	{% endif %}
+	<br />
+	
+	Does this Item have a printed expiration date?
+	
+	<ul>
+		<input type="radio" name="exp_date_option" id="choicedate" value="date"/>
+			<label for="choicedate">Yes</label>
+			<input type = "date" name="exp_date"/>
+			<br />
+		<input type="radio" name="exp_date_option" id="choicenone" value="none"/>
+			<label for="choicedate">No</label>
+	</ul>
+	
+	<br />
+	
+	
+	<input type="submit" name="submit" id="submit" />
+	<input type="button" name="cancel" value="Cancel"
+	       onclick="location.href='{% url 'inventory:type:detail' type.id %}'" />
+</form>
