@@ -48,6 +48,8 @@ def item_create_submit(request, type_key):
 	try:
 		location_id = int(request.POST['location_list'])
 		location = Location.objects.get(pk=location_id)
+		if location.user != request.user:
+			raise Exception
 	except:
 		message = 'Please select a valid location.'
 		error_messages.append(message)
@@ -92,7 +94,7 @@ def item_open(request, item_id):
 	"""
 	Action to assign an opening date to an item.
 	"""
-	item = _get_allowed_item_or_404(request, pk=item_id)
+	item = _get_allowed_item_or_404(request, item_id)
 	
 	error_messages = []
 	
@@ -152,6 +154,51 @@ def item_open(request, item_id):
 	#return HttpResponse("Opening item {}.".format(item_id))
 	#return item_detail(request, item_id)
 	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
+
+
+def item_move_page(request, item_id, error_messages=None):
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
+	item = _get_allowed_item_or_404(request, item_id)
+	
+	location_list = Location.objects.filter(user=request.user)
+	
+	template = 'inventory/item_move.html'
+	context = {
+		'error_messages': error_messages,
+		'item': item,
+		'location_list': location_list,
+	}
+	return render(request, template, context)
+
+
+def item_move_submit(request, item_id):
+	"""
+	Changes the storage location of an item
+	"""
+	item = _get_allowed_item_or_404(request, item_id)
+	
+	error_messages = []
+	
+	try:
+		location_id = int(request.POST['location_list'])
+		location = Location.objects.get(pk=location_id)
+		if location.user != request.user:
+			raise Exception
+	except:
+		message = 'Please select a valid location.'
+		error_messages.append(message)
+	
+	if len(error_messages) > 0:
+		return item_move_page(request, item_id, error_messages)
+	
+	item.location = location
+	item.save()
+	
+	redirect_url = reverse('inventory:item_detail', args=(item_id,))
+	return HttpResponseRedirect(redirect_url)
 
 
 def item_delete(request, item_id):

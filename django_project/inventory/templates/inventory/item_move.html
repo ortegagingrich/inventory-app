@@ -1,0 +1,25 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+
+<h1>Move Item: {{item}}</h1>
+
+
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
+<form action="{% url 'inventory:item_move_submit' item.id %}" method="post">
+	{% csrf_token %}
+	
+	{% include "inventory/location/select.html" %}
+	
+	<input type="submit" name="submit" id="submit" />
+	<input type="button" name="cancel" value="Cancel"
+	       onclick="location.href='{% url 'inventory:item_detail' item.id %}'" />
+</form>

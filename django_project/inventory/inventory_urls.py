@@ -44,6 +44,11 @@ user_urlpatterns = [
 	#/inventory/5/open/submit/
 	url(r'^(?P<item_id>[0-9]+)/open/submit/$', 
 	    actions_item.item_open, name='item_open_submit'),
+	#/inventory/5/move/
+	url(r'^(?P<item_id>[0-9]+)/move/$', actions_item.item_move_page, name='item_move_page'),
+	#/inventory/5/move/submit/
+	url(r'^(?P<item_id>[0-9]+)/move/submit/$', actions_item.item_move_submit,
+	    name='item_move_submit'),
 	#/inventory/5/delete/
 	url(r'^(?P<item_id>[0-9]+)/delete/$', actions_item.item_delete, name='item_delete'),
 ]
