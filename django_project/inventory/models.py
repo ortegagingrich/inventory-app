@@ -180,7 +180,8 @@ class Item(models.Model):
 		if self.item_type.openable and self.opened:
 			base_date = self.opened_date
 			term = self.item_type.open_expiration_term
-			modified_date = min(base_date + term, modified_date)
+			if term != None:
+				modified_date = min(base_date + term, modified_date)
 		
 		exp_date = min(self.printed_expiration_date, modified_date)
 		
