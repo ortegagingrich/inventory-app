@@ -3,17 +3,26 @@
 </a>
 
 {% if user.is_staff %}
+&nbsp
 <a href="{% url 'admin:index' %}">
 	[ADMIN]
 </a>
 {% endif %}
 
 {% if user.is_authenticated %}
+	&nbsp&nbsp
+	
 	Welcome 
 	<a href="{% url 'inventory:profile' %}">
 		{{ user.get_username }}
 	</a>
-	.
+	.&nbsp&nbsp
+	
+	<a href="{% url 'inventory:notifications' %}">
+		[View Notifications]
+	</a>
+	
+	&nbsp&nbsp
 	<a href="{% url 'inventory:logout' %}">
 		[Logout]
 	</a>
