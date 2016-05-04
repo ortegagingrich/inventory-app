@@ -1,0 +1,26 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h1>Current Notifications:</h1>
+
+<font color="orange">
+{% if notification_count == 0 %}
+	You currently have no notifications.
+{% else %}
+	You currently have {{notification_count}} notification{{notification_count|pluralize}}
+{% endif %}
+</font>
+
+{% if notifications %}
+	<ul>
+	{% for notification in notifications %}
+		<li>{{notification}}</li>
+	{% endfor %}
+	</ul>
+{% endif %}
+
