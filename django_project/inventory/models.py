@@ -137,6 +137,19 @@ class Item(models.Model):
 	_location_date = models.DateField(null=True)
 	
 	
+	def get_expired_items(user):
+		"""
+		Returns a (possibly empty) list of expired items owned by the
+		provided user
+		"""
+		all_items = Item.objects.filter(user=user)
+		expired_items = []
+		for item in all_items:
+			if item.expired:
+				expired_items.append(item)
+		return expired_items
+	
+	
 	def __setattr__(self, k, v):
 		super(Item, self).__setattr__(k, v)
 		if k in ['location_id', 'opened_date']:
