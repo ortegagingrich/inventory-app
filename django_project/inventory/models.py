@@ -136,7 +136,7 @@ class Item(models.Model):
 	#the date when the item was placed in its last location; if null
 	_location_date = models.DateField(null=True)
 	
-	
+	@staticmethod
 	def get_expired_items(user):
 		"""
 		Returns a (possibly empty) list of expired items owned by the
