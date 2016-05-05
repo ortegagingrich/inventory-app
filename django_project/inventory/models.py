@@ -244,3 +244,37 @@ class Item(models.Model):
 		return self.item_type.name
 
 
+"""Administrative Models"""
+
+class NeedsPasswordReset(models.Models):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	
+	@staticmethod
+	def needs_reset(user):
+		"""Checks to see if the provided user needs a password reset"""
+		try:
+			NeedsPasswordReset.objects.get(user=user)
+			return True
+		except ObjectDoesNotExist:
+			return False
+	
+	@staticmethod
+	def on_reset_password(user):
+		"""
+		User no longer needs to reset password
+		"""
+		try:
+			needs_entry = NeedsPasswordReset.objects.get(user=user)
+			needs_entry.delete()
+		except ObjectDoesNotExist:
+			pass
+	
+	def on_need_reset(user):
+		"""
+		User does something that requires a password reset (e.g. new account)
+		"""
+		if not needs_reset(user):
+			needs_reset = NeedsPasswordReset(user=user)
+			needs_reset.save()
+
+
