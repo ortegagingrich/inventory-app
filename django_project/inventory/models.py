@@ -269,6 +269,7 @@ class NeedsPasswordReset(models.Models):
 		except ObjectDoesNotExist:
 			pass
 	
+	@staticmethod
 	def on_need_reset(user):
 		"""
 		User does something that requires a password reset (e.g. new account)
