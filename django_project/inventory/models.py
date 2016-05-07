@@ -258,6 +258,7 @@ class NeedsPasswordReset(models.Models):
 		except ObjectDoesNotExist:
 			return False
 	
+	
 	@staticmethod
 	def on_reset_password(user):
 		"""
