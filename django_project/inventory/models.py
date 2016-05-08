@@ -269,7 +269,8 @@ class NeedsPasswordReset(models.Models):
 			needs_entry.delete()
 		except ObjectDoesNotExist:
 			pass
-	
+
+
 	@staticmethod
 	def on_need_reset(user):
 		"""
