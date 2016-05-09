@@ -3,7 +3,9 @@ from __future__ import unicode_literals
 from datetime import date, timedelta
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
 """
@@ -246,15 +248,24 @@ class Item(models.Model):
 
 """Administrative Models"""
 
-class NeedsPasswordReset(models.Models):
+class UserProfile(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	
+	needs_password_reset = models.BooleanField(default=True)
+	
+	
+	@receiver(models.signals.post_save, sender=User)
+	def create_profile(sender, instance, created, **kwargs):
+		if created:
+			UserProfile.on_require_reset(user=instance)
+	
 	
 	@staticmethod
 	def needs_reset(user):
 		"""Checks to see if the provided user needs a password reset"""
 		try:
-			NeedsPasswordReset.objects.get(user=user)
-			return True
+			profile = UserProfile.objects.get(user=user)
+			return profile.needs_password_reset
 		except ObjectDoesNotExist:
 			return False
 	
@@ -265,19 +276,22 @@ class NeedsPasswordReset(models.Models):
 		User no longer needs to reset password
 		"""
 		try:
-			needs_entry = NeedsPasswordReset.objects.get(user=user)
-			needs_entry.delete()
+			profile = UserProfile.objects.get(user=user)
+			profile.needs_password_reset = False
+			profile.save()
 		except ObjectDoesNotExist:
 			pass
 
 
 	@staticmethod
-	def on_need_reset(user):
+	def on_require_reset(user):
 		"""
 		User does something that requires a password reset (e.g. new account)
 		"""
-		if not needs_reset(user):
-			needs_reset = NeedsPasswordReset(user=user)
-			needs_reset.save()
+		profile, new = UserProfile.objects.get_or_create(user=user)
+		
+		if not profile.needs_password_reset:
+			profile.needs_password_reset = True
+			profile.save()
 
 
