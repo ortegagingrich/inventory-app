@@ -251,7 +251,7 @@ class Item(models.Model):
 class UserProfile(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	
-	needs_password_reset = models.BooleanField(default=True)
+	_needs_password_reset = models.BooleanField(default=True)
 	
 	
 	@receiver(models.signals.post_save, sender=User)
@@ -261,11 +261,11 @@ class UserProfile(models.Model):
 	
 	
 	@staticmethod
-	def needs_reset(user):
+	def needs_password_reset(user):
 		"""Checks to see if the provided user needs a password reset"""
 		try:
 			profile = UserProfile.objects.get(user=user)
-			return profile.needs_password_reset
+			return profile._needs_password_reset
 		except ObjectDoesNotExist:
 			return False
 	
@@ -277,7 +277,7 @@ class UserProfile(models.Model):
 		"""
 		try:
 			profile = UserProfile.objects.get(user=user)
-			profile.needs_password_reset = False
+			profile._needs_password_reset = False
 			profile.save()
 		except ObjectDoesNotExist:
 			pass
@@ -290,8 +290,8 @@ class UserProfile(models.Model):
 		"""
 		profile, new = UserProfile.objects.get_or_create(user=user)
 		
-		if not profile.needs_password_reset:
-			profile.needs_password_reset = True
+		if not profile._needs_password_reset:
+			profile._needs_password_reset = True
 			profile.save()
 
 

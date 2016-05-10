@@ -4,7 +4,7 @@ Contains methods for setting up contexts for notifications.
 from django.http import Http404
 from django.shortcuts import render
 
-from inventory.models import Item
+from inventory.models import Item, UserProfile
 
 
 def notifications_view(request):
@@ -39,9 +39,20 @@ def has_notifications(user):
 def get_notifications(user):
 	notifications = []
 	
+	_check_notifications_account(user, notifications)
 	_check_notifications_expired(user, notifications)
 	
 	return notifications
+
+
+def _check_notifications_account(user, notifications):
+	"""
+	If there are any notifications related to the user's account (e.g. needs a
+	password reset, etc.), appends them to the provided notification list
+	"""
+	if UserProfile.needs_password_reset(user):
+		notification = 'You must reset your password.'
+		notifications.append(notification)
 
 
 def _check_notifications_expired(user, notifications):
