@@ -249,6 +249,8 @@ class Item(models.Model):
 """Administrative Models"""
 
 class UserProfile(models.Model):
+	from inventory.user import passwords
+	
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	
 	_needs_password_reset = models.BooleanField(default=True)
@@ -257,41 +259,22 @@ class UserProfile(models.Model):
 	@receiver(models.signals.post_save, sender=User)
 	def create_profile(sender, instance, created, **kwargs):
 		if created:
-			UserProfile.on_require_reset(user=instance)
+			passwords.on_require_reset(user=instance)
 	
 	
-	@staticmethod
-	def needs_password_reset(user):
-		"""Checks to see if the provided user needs a password reset"""
-		try:
-			profile = UserProfile.objects.get(user=user)
-			return profile._needs_password_reset
-		except ObjectDoesNotExist:
-			return False
+	@receiver(models.signals.pre_save, sender=User)
+	def update_profile(sender, instance, **kwargs):
+		if instance:
+			new_password = instance.password
+			try:
+				old_password = User.objects.get(pk=instance.pk).password
+			except User.DoesNotExist:
+				#This means that the user is just being created; still needs password reset
+				return
+			
+			if new_password != old_password:
+				passwords.on_reset(user=instance)
 	
 	
-	@staticmethod
-	def on_reset_password(user):
-		"""
-		User no longer needs to reset password
-		"""
-		try:
-			profile = UserProfile.objects.get(user=user)
-			profile._needs_password_reset = False
-			profile.save()
-		except ObjectDoesNotExist:
-			pass
-
-
-	@staticmethod
-	def on_require_reset(user):
-		"""
-		User does something that requires a password reset (e.g. new account)
-		"""
-		profile, new = UserProfile.objects.get_or_create(user=user)
-		
-		if not profile._needs_password_reset:
-			profile._needs_password_reset = True
-			profile.save()
 
 
