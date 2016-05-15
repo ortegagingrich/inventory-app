@@ -10,6 +10,9 @@ from inventory.models import *
 from inventory.user import defaults
 from inventory.views import views
 
+#TODO: NEEDS REFACTOR
+#TODO: All functionality herein not directly related to form entries should be
+#      moved elsewhere.
 
 #login
 def login_action(request):
@@ -39,7 +42,8 @@ def logout_action(request):
 #Profile modification
 def profile_submit(request):
 	
-	#once all possible changes have been made
+	# function to be run once the form has been read and all possible
+	# changes have been made
 	def finish(messages):
 		request.user.save()
 		if len(messages) == 0:
@@ -53,6 +57,7 @@ def profile_submit(request):
 	except:
 		return finish(['Invalid Changes.'])
 	
+	#TODO: BEGIN MOVE
 	error_messages = []
 	
 	#check that the new email is valid
@@ -68,6 +73,7 @@ def profile_submit(request):
 	#set first and last names
 	request.user.first_name = fname
 	request.user.last_name = lname
+	#TODO: END MOVE
 	
 	return finish(error_messages)
 
@@ -82,16 +88,22 @@ def password_change(request):
 	if tentative_password != repeat:
 		error_messages.append('Entered Passwords do not match.')
 	
+	
+	#TODO: BEGIN MOVE
 	if len(tentative_password) < 6:
 		error_messages.append('Passwords must have at least 6 characters.')
 	
-	#Redirect to the profile page
 	if len(error_messages) == 0:
 		#change password
 		request.user.set_password(tentative_password)
 		request.user.save()
-		
+	#TODO: END MOVE
+	
+	
+	if len(error_messages) == 0:
 		error_messages = ['Password Successfully Reset.']
+	
+	#Redirect to the profile page
 	return views.profile_page(request, error_messages=error_messages)
 
 
@@ -107,6 +119,8 @@ def signup_submit(request):
 		email = request.POST['email']
 	except:
 		return fail('Please enter a valid username and email address.')
+	
+	#TODO: BEGIN MOVE
 	
 	#First, check that the "email" is actually a valid address
 	from django.core.validators import validate_email

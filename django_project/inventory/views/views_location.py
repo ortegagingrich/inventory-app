@@ -9,6 +9,8 @@ from django.core.urlresolvers import reverse
 
 from inventory.models import *
 
+#TODO: NEEDS REFACTOR
+
 
 #Index view
 class IndexView(generic.ListView):
@@ -74,6 +76,7 @@ def create_submit(request):
 	return HttpResponseRedirect(redirect_url)
 
 
+#TODO: functionality should really be somewhere else and independent of request
 def create_location(request):
 	"""
 	Attempts to return a location using the given request.

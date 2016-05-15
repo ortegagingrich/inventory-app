@@ -6,6 +6,7 @@ from django.shortcuts import render
 
 from inventory.models import Item, UserProfile
 
+#TODO: DEAL WITH LATER
 
 def notifications_view(request):
 	"""A view for a notification page"""

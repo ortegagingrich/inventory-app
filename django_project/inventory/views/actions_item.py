@@ -7,6 +7,8 @@ from django.core.urlresolvers import reverse
 from inventory.models import *
 from inventory.views import views, views_location
 
+#TODO: NEEDS REFACTOR
+
 
 def item_create_page(request, type_key, error_messages=None):
 	if error_messages != None:

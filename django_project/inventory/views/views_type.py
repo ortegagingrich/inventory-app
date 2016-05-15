@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse
 
 from inventory.models import *
 
+#TODO: NEED REFACTOR
+
 
 def index_page(request):
 	if not request.user.is_authenticated():
