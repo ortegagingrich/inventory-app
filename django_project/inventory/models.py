@@ -249,7 +249,6 @@ class Item(models.Model):
 """Administrative Models"""
 
 class UserProfile(models.Model):
-	from inventory.user import passwords
 	
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	
@@ -259,7 +258,7 @@ class UserProfile(models.Model):
 	@receiver(models.signals.post_save, sender=User)
 	def create_profile(sender, instance, created, **kwargs):
 		if created:
-			passwords.on_require_reset(user=instance)
+			UserProfile.on_require_reset(user=instance)
 	
 	
 	@receiver(models.signals.pre_save, sender=User)
@@ -273,7 +272,39 @@ class UserProfile(models.Model):
 				return
 			
 			if new_password != old_password:
-				passwords.on_reset(user=instance)
+				UserProfile.on_reset(user=instance)
+	
+	@staticmethod
+	def needs_reset(user):
+		"""Checks to see if the provided user needs a password reset"""
+		try:
+			profile = UserProfile.objects.get(user=user)
+			return profile._needs_password_reset
+		except ObjectDoesNotExist:
+			return False
+	
+	@staticmethod
+	def on_reset(user):
+		"""
+		User no longer needs to reset password
+		"""
+		try:
+			profile = UserProfile.objects.get(user=user)
+			profile._needs_password_reset = False
+			profile.save()
+		except ObjectDoesNotExist:
+			pass
+	
+	@staticmethod
+	def on_require_reset(user):
+		"""
+		User does something that requires a password reset (e.g. new account)
+		"""
+		profile, new = UserProfile.objects.get_or_create(user=user)
+		
+		if not profile._needs_password_reset:
+			profile._needs_password_reset = True
+			profile.save()
 	
 	
 

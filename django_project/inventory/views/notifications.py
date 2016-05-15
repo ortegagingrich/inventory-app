@@ -5,7 +5,6 @@ from django.http import Http404
 from django.shortcuts import render
 
 from inventory.models import Item, UserProfile
-from inventory.user import passwords
 
 
 def notifications_view(request):
@@ -51,7 +50,7 @@ def _check_notifications_account(user, notifications):
 	If there are any notifications related to the user's account (e.g. needs a
 	password reset, etc.), appends them to the provided notification list
 	"""
-	if passwords.needs_reset(user):
+	if UserProfile.needs_reset(user):
 		notification = 'You must reset your password.'
 		notifications.append(notification)
 
