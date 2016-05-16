@@ -8,6 +8,8 @@ from django.db import models
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 
+import inventory.exceptions
+
 """
 Important note about the behavior of defaults.
 
@@ -48,6 +50,21 @@ class Location(models.Model):
 	name = models.CharField(max_length=100)
 	refrigerated = models.BooleanField(default=False)
 	frozen = models.BooleanField(default=False)
+	
+	@staticmethod
+	def retrieve_with_write_permision(user, location_id):
+		"""
+		Attempts to retrieve an item with the given id belonging to the given user.
+		If no such item exists, the appropriate error is raised
+		"""
+		try:
+			item = Item.objects.get(pk=item_id)
+			if item.user != user:
+				raise Exception
+		except:
+			raise inventory.exceptions.InvalidItemError(item_id)
+		return item
+	
 	
 	@property
 	def temperature(self):
@@ -97,6 +114,22 @@ class ItemType(models.Model):
 	open_expiration_term = models.DurationField(null=True, blank=True)
 	freezer_expiration_term = models.DurationField(null=True, blank=True)
 	
+	
+	@staticmethod
+	def retrieve_with_write_permission(user, type_id):
+		"""
+		Attempts to retrieve an ItemType with the given id belonging to the given user.
+		If no such type exists, the appropriate error is raised
+		"""
+		try:
+			item_type = ItemType.objects.get(pk=type_id)
+			if not item_type.user in [user, None]:
+				raise Exception
+		except:
+			raise inventory.exceptions.InvalidItemTypeError(type_id)
+		return item_type
+	
+	
 	@property
 	def is_generic(self):
 		return self.open_grocery_entry == None
@@ -137,6 +170,22 @@ class Item(models.Model):
 	_improperly_stored = models.BooleanField(default=False)
 	#the date when the item was placed in its last location; if null
 	_location_date = models.DateField(null=True)
+	
+	
+	@staticmethod
+	def retrieve_with_write_permission(user, item_id):
+		"""
+		Attempts to retrieve an item with the given id belonging to the given user.
+		If no such item exists, the appropriate error is raised
+		"""
+		try:
+			item = Item.objects.get(pk=item_id)
+			if item.user != user:
+				raise Exception
+		except:
+			raise inventory.exceptions.InvalidItemError(item_id)
+		return item
+	
 	
 	@staticmethod
 	def get_expired_items(user):
