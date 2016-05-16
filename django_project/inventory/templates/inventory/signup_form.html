@@ -8,9 +8,9 @@
 
 <h2>Signup:</h2>
 
-{% if error_message %}
-	<font color="red">{{ error_message }}</font> <br>
-{% endif %}
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
 
 Please enter the fields below.  (* Required Field)
 

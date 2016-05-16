@@ -8,11 +8,9 @@ from django.core.urlresolvers import reverse
 
 from inventory.models import *
 from inventory.user import defaults
+from inventory.user.operations import create_user, update_user, change_password
 from inventory.views import views
 
-#TODO: NEEDS REFACTOR
-#TODO: All functionality herein not directly related to form entries should be
-#      moved elsewhere.
 
 #login
 def login_action(request):
@@ -57,23 +55,7 @@ def profile_submit(request):
 	except:
 		return finish(['Invalid Changes.'])
 	
-	#TODO: BEGIN MOVE
-	error_messages = []
-	
-	#check that the new email is valid
-	from django.core.validators import validate_email
-	from django.core.exceptions import ValidationError
-	try:
-		validate_email(email)
-	except ValidationError:
-		error_messages.append('Invalid Email Address "{}"'.format(email))
-	else:
-		request.user.email = email
-	
-	#set first and last names
-	request.user.first_name = fname
-	request.user.last_name = lname
-	#TODO: END MOVE
+	error_messages = update_user(user=request.user, email=email, fname=fname, lname=lname)
 	
 	return finish(error_messages)
 
@@ -89,15 +71,7 @@ def password_change(request):
 		error_messages.append('Entered Passwords do not match.')
 	
 	
-	#TODO: BEGIN MOVE
-	if len(tentative_password) < 6:
-		error_messages.append('Passwords must have at least 6 characters.')
-	
-	if len(error_messages) == 0:
-		#change password
-		request.user.set_password(tentative_password)
-		request.user.save()
-	#TODO: END MOVE
+	error_messages += change_password(request.user, tentative_password)
 	
 	
 	if len(error_messages) == 0:
@@ -111,51 +85,33 @@ def password_change(request):
 def signup_submit(request):
 	
 	#in case of failure
-	def fail(message):
-		return views.signup_page(request, error_message=message)
+	def fail(messages):
+		return views.signup_page(request, error_messages=messages)
 	
 	try:
 		username = request.POST['username']
 		email = request.POST['email']
 	except:
-		return fail('Please enter a valid username and email address.')
+		return fail(['Please enter a valid username and email address.'])
 	
-	#TODO: BEGIN MOVE
+	#Attempt to create the account
+	(user, error_messages) = create_user(
+		username=username,
+		email=email,
+		fname='[FIRST NAME]'
+		lname='[LAST NAME]'
+	)
 	
-	#First, check that the "email" is actually a valid address
-	from django.core.validators import validate_email
-	from django.core.exceptions import ValidationError
-	try:
-		validate_email(email)
-	except ValidationError:
-		return fail('Please enter a valid email address.')
+	if user == None:
+		return fail(error_messages)
 	
-	if '\'' in username or '\"' in username:
-		return fail('Usernames cannot contain quotations or apostrophes.')
-	
-	#Next, check to make sure that the username is alright
-	if len(username) < 5:
-		return fail('Please enter a username with at least five characters.')
-	if User.objects.filter(username=username).exists():
-		message = 'The username "{}" is already taken.  Please choose another.'
-		return fail(message.format(username))
-	
-	#TODO: better automatic password
-	temporary_password = 'password'
-	try:
-		user = User.objects.create_user(username, email, temporary_password)
-	except:
-		return fail('Could not create account.  Please try again.')
-	
-	
-	#Signup success; create default database
-	defaults.create_user_defaults(user)
 	
 	#Display Success Page
 	template = 'inventory/signup_success.html'
 	context = {
 		'username': user.username,
 		'temporary_password': temporary_password,
+		'error_messages': error_messages,
 	}
 	return render(request, template, context)
 

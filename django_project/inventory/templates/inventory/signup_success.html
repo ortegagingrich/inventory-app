@@ -6,6 +6,10 @@
 	{% include "inventory/inventory_header.html" %}
 </div>
 
+{% if error_messages %}<font color="red"><ul>{% for message in error_messages %}
+	<li>{{ message }}</li>
+{% endfor %}</ul></font>{% endif %}
+
 Congratulations.  You have successfully created an account with username "{{username}}".  
 {% if temporary_password %}
 	  <font color="yellow">Your temporary password is "{{temporary_password}}".</font>

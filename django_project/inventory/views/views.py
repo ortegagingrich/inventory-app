@@ -30,7 +30,7 @@ def login_page(request, error_message=None):
 def signup_page(request, error_message=None):
 	template = 'inventory/signup_form.html'
 	context = {
-		'error_message': error_message,
+		'error_messages': error_messages,
 	}
 	return render(request, template, context)
 
