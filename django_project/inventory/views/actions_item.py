@@ -153,8 +153,6 @@ def item_open(request, item_id):
 		item.opened_date = open_date
 		item.save()
 	
-	#return HttpResponse("Opening item {}.".format(item_id))
-	#return item_detail(request, item_id)
 	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
 
 
