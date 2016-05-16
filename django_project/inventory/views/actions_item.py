@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 
 from inventory.models import *
+from inventory.item.operations import *
 from inventory.views import views, views_location
 
 #TODO: NEEDS REFACTOR
@@ -193,9 +194,6 @@ def item_move_submit(request, item_id):
 	
 	try:
 		location_id = int(request.POST['location_list'])
-		location = Location.objects.get(pk=location_id)
-		if location.user != request.user:
-			raise Exception
 	except:
 		message = 'Please select a valid location.'
 		error_messages.append(message)
@@ -203,8 +201,16 @@ def item_move_submit(request, item_id):
 	if len(error_messages) > 0:
 		return item_move_page(request, item_id, error_messages)
 	
-	item.location = location
-	item.save()
+	
+	try:
+		move_item(request.user, item_id, location_id)
+	except:
+		message = 'Unable to move item.'
+		error_messages.append(message)
+	
+	if len(error_messages) > -:
+		return item_move_page(request, item_id, error_messages)
+	
 	
 	redirect_url = reverse('inventory:item_detail', args=(item_id,))
 	return HttpResponseRedirect(redirect_url)
