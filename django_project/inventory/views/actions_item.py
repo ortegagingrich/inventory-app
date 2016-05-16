@@ -49,6 +49,7 @@ def item_create_submit(request, type_key):
 		raise Http404
 	
 	
+	# Extract data from the form
 	try:
 		location_id = int(request.POST['location_list'])
 	except:
@@ -73,28 +74,33 @@ def item_create_submit(request, type_key):
 		error_messages.append(message)
 	
 	
+	if len(error_messages) > 0:
+		return item_create_page(request, type_key, error_messages)
+	
+	
+	# Try to create the item using the form data extracted above
+	try:
+		new_item = create_item(			
+			user=request.user,
+			location_id=location_id,
+			type_id=item_type.id,
+			printed_expiration_date=printed_expiration_date,
+		)
+	except:
+		message = 'Could not create item.'
+		error_messages.append(message)
+	
 	
 	if len(error_messages) > 0:
 		return item_create_page(request, type_key, error_messages)
 	
 	
-	#create the item
-	(new_item, error_messages) = create_item(
-		user=request.user,
-		location_id=location_id,
-		type_id=item_type.id,
-		printed_expiration_date=printed_expiration_date,
-	)
-	
-	if new_item == None:
-		return item_create_page(request, type_key, error_messages)
-	
-	
-	#redirect to the item's detail page
+	# Redirect to the item's detail page
 	redirect_url = reverse('inventory:item_detail', args=(new_item.id,))
 	return HttpResponseRedirect(redirect_url)
 
 
+#TODO: come back here after move (handle as separate operation)
 def item_open(request, item_id):
 	"""
 	Action to assign an opening date to an item.
@@ -228,5 +234,4 @@ def _get_allowed_item_or_404(request, item_id):
 		raise Http404
 	
 	return item
-
 

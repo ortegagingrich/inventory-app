@@ -2,37 +2,30 @@
 Contains functions for carrying out CRUD operations.  Views CHANGE (but not read)
 the database through these functions
 """
+from django.http import HTTP404
+
 from inventory.models import Item, Location, ItemType
+import inventory.exceptions
 
 
 def create_item(user, location_id, type_id, printed_expiration_date):
 	"""
-	Attempts to create a new item.  Returns the item and a list of error messages.
+	Attempts to create a new item.
 	"""
-	error_messages = []
-	
 	
 	try:
 		location = Location.objects.get(pk=location_id)
 		if location.user != user:
 			raise Exception
 	except:
-		location = None
-		message = 'Invalid Location ID: {}'
-		error_messages.append(message.format(location_id))
+		raise inventory.exceptions.InvalidLocationError(location_id)
 	
 	try:
 		item_type = ItemType.objects.get(pk=type_id)
 		if item_type.user != user:
 			raise Exception
 	except:
-		item_type = None
-		messages = 'Invalid ItemType ID: {}'
-		error_messages.append(messages.format(type_id))
-	
-	
-	if location == None or item_type == None:
-		return (None, error_messages)
+		raise inventory.exceptions.InvalidItemTypeError(type_id)
 	
 	
 	#create the item
@@ -44,8 +37,32 @@ def create_item(user, location_id, type_id, printed_expiration_date):
 		)
 		new_item.save()
 	except:
-		new_item = None
-		message = 'Could not create item.'
-		error_messages.append(message)
+		raise inventory.exceptions.ItemCreateError
 	
-	return (new_item, error_messages)
+	return new_item
+
+
+def open_item():
+	"""
+	Attempts to open the provided item.
+	"""
+	pass
+
+
+def move_item(user, item_id, location_id):
+	pass
+
+
+
+def _get_allowed_item_or_404(user, item_id):
+	"""
+	Attempts to retrieve an item with the given id.  If no such item exists, or
+	if the requesting user does not have authority, a 404 is raised.
+	"""
+	item = get_object_or_404(Item, pk=item_id)
+	
+	#Verify the user's authority
+	if item.user != user or not user.is_authenticated():
+		raise Http404
+	
+	return item
