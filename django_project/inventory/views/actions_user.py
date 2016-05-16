@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 
 from inventory.user.operations import create_user, update_user, change_password
 from inventory.views import views
+import inventory.exceptions
 
 
 #login
@@ -53,8 +54,8 @@ def profile_submit(request):
 	
 	try:
 		update_user(user=request.user, email=email, fname=fname, lname=lname)
-	except ValidationError:
-		message = 'Please enter a valid email address'
+	except inventory.exceptions.InvalidValueError as error:
+		message = error.message
 		return views.profile_page(request, [message])
 	except:
 		raise Http404
@@ -73,7 +74,11 @@ def password_change(request):
 		error_messages.append('Entered Passwords do not match.')
 	
 	
-	error_messages += change_password(request.user, tentative_password)
+	try:
+		change_password(request.user, tentative_password)
+	except inventory.exceptions.InvalidPasswordError as error:
+		message = error.message
+		error_messages.append(message)
 	
 	
 	if len(error_messages) == 0:
@@ -96,16 +101,24 @@ def signup_submit(request):
 	except:
 		return fail(['Please enter a valid username and email address.'])
 	
-	#Attempt to create the account
-	(user, error_messages) = create_user(
-		username=username,
-		email=email,
-		fname='[FIRST NAME]'
-		lname='[LAST NAME]'
-	)
 	
-	if user == None:
-		return fail(error_messages)
+	#Attempt to create the account
+	try:
+		user = create_user(
+			username=username,
+			email=email,
+			fname='[FIRST NAME]',
+			lname='[LAST NAME]',
+		)
+	except inventory.exceptions.InvalidValueError as error:
+		message = error.message
+		return fail([message])
+	except inventory.exceptions.UserCreateError:
+		message = 'Could not create user.'
+		return fail([message])
+	except:
+		message = 'Failed to create new account.'
+		return fail([message])
 	
 	
 	#Display Success Page

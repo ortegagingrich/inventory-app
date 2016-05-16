@@ -6,32 +6,26 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 from inventory.user import defaults
+import inventory.exceptions
 
 
 def create_user(username, email, fname=None, lname=None):
 	"""
-	Attempts to create a user using the provided information.  Returns the new
-	user or None as well as a list of error messages
+	Attempts to create a user using the provided information.
 	"""
-	error_messages = []
 	
 	try:
 		validate_email(email)
 	except ValidationError:
-		error_messages.append('Please enter a valid email address.')
+		raise inventory.exceptions.InvalidEmailError(email)
 	
 	
 	#Next, check to make sure that the username meets the criteria
 	if len(username) < 5:
-		error_messages.append('Please enter a username with at least five characters.')
+		raise inventory.exceptions.InvalidUsernameError(username)
 	elif User.objects.filter(username=username).exists():
-		message = 'The username "{}" is already taken.  Please choose another.'
-		error_messages.append(message.format(username))
+		raise inventory.exceptions.UnavailableUsernameError(username)
 	
-	
-	#if there are errors, do not continue
-	if len(error_messages) > 0:
-		return (None, error_messages)
 	
 	
 	#TODO: better temporary password
@@ -42,20 +36,21 @@ def create_user(username, email, fname=None, lname=None):
 		user = User.objects.create_user(username, email, temporary_password)
 		defaults.create_user_defaults(user)
 	except:
-		user = None
-		return error_messages.append('Could not create account.  Please try again.')
+		raise inventory.exceptions.UserCreateError
 	
-	return (user, error_messages)
+	return user
 
 
 def update_user(user, email=None, fname=None, lname=None):
 	"""
-	Attempts to execute the provided updates to the provided user.  Returns
-	a list of error messages
+	Attempts to execute the provided updates to the provided user.
 	"""
 	if email != None:
-		validate_email(email)
-		user.email = email
+		try:
+			validate_email(email)
+			user.email = email
+		except ValidationError:
+			raise inventory.exceptions.InvalidEmailError(email)
 	if fname != None:
 		user.first_name = fname
 	if lname != None:
@@ -66,18 +61,15 @@ def update_user(user, email=None, fname=None, lname=None):
 
 def change_password(user, tentative_password):
 	"""
-	Attempts to change the user's password.  Returns a list of error messages
+	Attempts to change the user's password.
 	"""
 	error_messages = []
 	
 	if len(tentative_password) < 6:
-		error_messages.append('Passwords must have at least 6 characters.')
+		raise inventory.exceptions.InvalidPasswordError(password)
 	
-	if len(error_messages) == 0:
-		#change password
-		request.user.set_password(tentative_password)
-		request.user.save()
-	
-	return error_messages
+	#change password
+	request.user.set_password(tentative_password)
+	request.user.save()
 
 
