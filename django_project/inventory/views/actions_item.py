@@ -101,7 +101,6 @@ def item_create_submit(request, type_key):
 	return HttpResponseRedirect(redirect_url)
 
 
-#TODO: come back here after move (handle as separate operation)
 def item_open(request, item_id):
 	"""
 	Action to assign an opening date to an item.
@@ -115,16 +114,18 @@ def item_open(request, item_id):
 	if item.item_type.needed_temperature == 1 and not item.location.refrigerated:
 		try:
 			refrigerator_choice = request.POST['refrigerator']
+			
+			
 			if refrigerator_choice == 'existing':
 				location_id = int(request.POST['location_list'])
-				item.location = Location.objects.get(pk=location_id)
-				item.save()
+				
 			elif refrigerator_choice == 'new':
+				# call the location create view to process the sub-form
 				(location, location_errors) = views_location.create_location(request)
 				if location != None:
-					item.location = location
-					item.save()
-					if not (location.refrigerated or location.frozen):
+					if location.refrigerated or location.forzeon:
+						location_id = location.id
+					else:
 						message = 'The item is still not in a refrigerated location.'
 						error_messages.append(message)
 				else:
@@ -132,6 +133,8 @@ def item_open(request, item_id):
 			else:
 				raise Exception
 			
+			
+			move_item(request.user, item_id, location_id)
 		except:
 			message = 'Please choose a refrigerated location to move this item to.'
 			error_messages.append(message)
@@ -159,9 +162,16 @@ def item_open(request, item_id):
 		return views.item_open_page(request, item_id, error_messages)
 	
 	
-	if not item.opened:
-		item.opened_date = open_date
-		item.save()
+	try:
+		open_item(request.user, item, open_date)
+	except:
+		message = 'Unable to open item.'
+		error_messages.append(message)
+	
+	
+	if len(error_messages) > 0:
+		return views.item_open_page(request, item_id, error_messages)
+	
 	
 	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
 
@@ -220,9 +230,7 @@ def item_delete(request, item_id):
 	"""
 	Action to remove the specified item from the database.
 	"""
-	item = _get_allowed_item_or_404(request, item_id)
-	
-	item.delete()
+	delete_item(request.user, item_id)
 	
 	return HttpResponseRedirect(reverse("inventory:inventory_index"))
 		

@@ -2,6 +2,7 @@
 Contains functions for carrying out CRUD operations.  Views CHANGE (but not read)
 the database through these functions
 """
+import django.core.exception
 
 from inventory.models import Item, Location, ItemType
 import inventory.exceptions
@@ -30,11 +31,22 @@ def create_item(user, location_id, type_id, printed_expiration_date):
 	return new_item
 
 
-def open_item():
+def open_item(user, item_id, open_date):
 	"""
-	Attempts to open the provided item.
+	Attempts to open the provided item, provided that it is not already open.
 	"""
-	pass
+	item = _retrieve_item(user, item_id)
+	
+	#if already opened, do nothing
+	if item.opened:
+		return
+	
+	try:
+		item.opened_date = open_date
+		item.save()
+	except django.core.exceptions.ValidationError:
+		raise inventory.exceptions.InvalidDateError(open_date)
+	
 
 
 def move_item(user, item_id, location_id):
@@ -49,7 +61,14 @@ def move_item(user, item_id, location_id):
 	item.save()
 
 
-
+def delete_item(user, item_id):
+	"""
+	Attempts to delete the item with the specified id, provided that the provided
+	user is its owner
+	"""
+	item = _retrieve_item(user, item_id)
+	
+	item.delete()
 
 
 
