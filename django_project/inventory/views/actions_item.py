@@ -43,18 +43,18 @@ def item_create_submit(request, type_key):
 	error_messages = []
 	
 	
+	# URL scheme requires throwing a 404 at this level, so we access the database
 	item_type = get_object_or_404(ItemType, pk=type_key)
 	if not item_type.user in [None, request.user]:
 		raise Http404
 	
+	
 	try:
 		location_id = int(request.POST['location_list'])
-		location = Location.objects.get(pk=location_id)
-		if location.user != request.user:
-			raise Exception
 	except:
 		message = 'Please select a valid location.'
 		error_messages.append(message)
+	
 	
 	try:
 		exp_date_option = request.POST['exp_date_option']
@@ -73,18 +73,21 @@ def item_create_submit(request, type_key):
 		error_messages.append(message)
 	
 	
+	
 	if len(error_messages) > 0:
 		return item_create_page(request, type_key, error_messages)
 	
 	
 	#create the item
-	new_item = Item(
+	(new_item, error_messages) = create_item(
 		user=request.user,
-		location=location,
-		item_type=item_type,
+		location_id=location_id,
+		type_id=item_type.id,
 		printed_expiration_date=printed_expiration_date,
 	)
-	new_item.save()
+	
+	if new_item == None:
+		return item_create_page(request, type_key, error_messages)
 	
 	
 	#redirect to the item's detail page
