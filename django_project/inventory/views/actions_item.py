@@ -7,8 +7,7 @@ from django.core.urlresolvers import reverse
 from inventory.models import *
 from inventory.item.operations import *
 from inventory.views import views, views_location
-
-#TODO: NEEDS REFACTOR
+import inventory.exceptions
 
 
 def item_create_page(request, type_key, error_messages=None):
@@ -87,6 +86,9 @@ def item_create_submit(request, type_key):
 			type_id=item_type.id,
 			printed_expiration_date=printed_expiration_date,
 		)
+	except InvalidValueError as error:
+		message = error.message
+		error_messages.append(message)
 	except:
 		message = 'Could not create item.'
 		error_messages.append(message)
@@ -164,6 +166,9 @@ def item_open(request, item_id):
 	
 	try:
 		open_item(request.user, item, open_date)
+	except inventory.exceptions.InvalidValueError as error:
+		message = error.value
+		error_messages.append(message)
 	except:
 		message = 'Unable to open item.'
 		error_messages.append(message)
@@ -214,6 +219,9 @@ def item_move_submit(request, item_id):
 	
 	try:
 		move_item(request.user, item_id, location_id)
+	except inventory.exceptions.InvalidValueError as error:
+		message = error.message
+		error_messages.append(message)
 	except:
 		message = 'Unable to move item.'
 		error_messages.append(message)
@@ -230,7 +238,10 @@ def item_delete(request, item_id):
 	"""
 	Action to remove the specified item from the database.
 	"""
-	delete_item(request.user, item_id)
+	try:
+		delete_item(request.user, item_id)
+	except:
+		raise Http404
 	
 	return HttpResponseRedirect(reverse("inventory:inventory_index"))
 		

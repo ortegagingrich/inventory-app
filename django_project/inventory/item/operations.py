@@ -25,6 +25,8 @@ def create_item(user, location_id, type_id, printed_expiration_date):
 			printed_expiration_date=printed_expiration_date,
 		)
 		new_item.save()
+	except ValidationError:
+		raise inventory.exceptions.InvalidDateError(printed_expiration_date)
 	except:
 		raise inventory.exceptions.ItemCreateError
 	
