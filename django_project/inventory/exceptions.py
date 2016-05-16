@@ -10,7 +10,6 @@ class InvalidIDError(Exception):
 		Exception.__init__(self, *args, **kwargs)
 		self.bad_id = bad_id
 
-
 class InvalidLocationError(InvalidIDError):
 	pass
 
@@ -19,6 +18,16 @@ class InvalidItemTypeError(InvalidIDError):
 
 class InvalidItemError(InvalidIDError):
 	pass
+
+
+class InvalidDateError(Exception):
+	"""
+	Exceptions resulting from invalid dates
+	"""
+	def __init__(self, bad_date, *args, **kwargs):
+		Exception.__init__(self, *args, **kwargs)
+		self.bad_date = bad_date
+
 
 
 class ObjectCreateError(Exception):
