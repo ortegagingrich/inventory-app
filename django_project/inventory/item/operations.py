@@ -2,7 +2,7 @@
 Contains functions for carrying out CRUD operations.  Views CHANGE (but not read)
 the database through these functions
 """
-import django.core.exception
+import django.core.exceptions
 
 from inventory.models import Item, Location, ItemType
 import inventory.exceptions

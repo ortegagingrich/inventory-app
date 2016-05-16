@@ -218,7 +218,7 @@ def item_move_submit(request, item_id):
 		message = 'Unable to move item.'
 		error_messages.append(message)
 	
-	if len(error_messages) > -:
+	if len(error_messages) > 0:
 		return item_move_page(request, item_id, error_messages)
 	
 	
