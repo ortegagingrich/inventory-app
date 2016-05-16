@@ -5,7 +5,7 @@ URLs related to the inventory system
 from django.conf.urls import include, url
 from django.views.generic.base import RedirectView
 
-from views import actions_admin, actions_user, actions_item, notifications, views
+from views import actions_admin, actions_user, actions_item, views, views_notification
 
 app_name = 'inventory'
 user_urlpatterns = [
@@ -34,7 +34,7 @@ user_urlpatterns = [
 	#/inventory/signup/submit/
 	url(r'^signup/submit/$', actions_user.signup_submit, name='signup_submit'),
 	#/inventory/notifications/
-	url(r'^notifications/$', notifications.notifications_view, name='notifications'),
+	url(r'^notifications/$', views_notification.notification_page, name='notification_page'),
 	#/inventory/index/
 	url(r'^index/$', views.IndexView.as_view(), name='inventory_index'),
 	#/inventory/5/

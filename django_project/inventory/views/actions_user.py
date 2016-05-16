@@ -6,8 +6,6 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 
-from inventory.models import *
-from inventory.user import defaults
 from inventory.user.operations import create_user, update_user, change_password
 from inventory.views import views
 

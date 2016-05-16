@@ -1,43 +1,21 @@
 """
-Contains methods for setting up contexts for notifications.
+Contains methods for dealing with user notifications
 """
-from django.http import Http404
-from django.shortcuts import render
-
 from inventory.models import Item, UserProfile
-
-#TODO: DEAL WITH LATER
-
-def notifications_view(request):
-	"""A view for a notification page"""
-	if not request.user.is_authenticated():
-		raise Http404
-	
-	template = 'inventory/notifications.html'
-	context = _get_notifications_context(request)
-	
-	return render(request, template, context)
-
-
-def _get_notifications_context(request):
-	"""
-	Returns a dictionary with all notifications for the provided request.
-	"""
-	notifications = get_notifications(request.user)
-	
-	context = {
-		'notification_count': len(notifications),
-		'notifications': notifications,
-	}
-	
-	return context
 
 
 def has_notifications(user):
+	"""
+	Checks to see if the provided user has outstanding notifications
+	"""
 	return len(get_notifications(user)) > 0
 
 
 def get_notifications(user):
+	"""
+	Returns a list of all of the provided user's outstanding notifications
+	expressed as strings.
+	"""
 	notifications = []
 	
 	_check_notifications_account(user, notifications)
