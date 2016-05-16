@@ -37,25 +37,29 @@ def logout_action(request):
 
 #Profile modification
 def profile_submit(request):
-	
-	# function to be run once the form has been read and all possible
-	# changes have been made
-	def finish(messages):
-		request.user.save()
-		if len(messages) == 0:
-			messages = None
-		return views.profile_page(request, error_messages=messages)
+	error_messages = []
 	
 	try:
 		email = request.POST['email']
 		fname = request.POST['first_name']
 		lname = request.POST['last_name']
 	except:
-		return finish(['Invalid Changes.'])
+		message = 'Invalid Changes.'
+		error_messages.append(message)
 	
-	error_messages = update_user(user=request.user, email=email, fname=fname, lname=lname)
 	
-	return finish(error_messages)
+	if len(error_messages) > 0:
+		return views.profile_page(request, error_messages)
+	
+	try:
+		update_user(user=request.user, email=email, fname=fname, lname=lname)
+	except ValidationError:
+		message = 'Please enter a valid email address'
+		return views.profile_page(request, [message])
+	except:
+		raise Http404
+	
+	return views.profile_page(request)
 
 
 #Change Password

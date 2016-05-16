@@ -53,24 +53,15 @@ def update_user(user, email=None, fname=None, lname=None):
 	Attempts to execute the provided updates to the provided user.  Returns
 	a list of error messages
 	"""
-	error_messages = []
-	
 	if email != None:
-		try:
-			validate_email(email)
-		except ValidationError:
-			error_messages.append('Invalid Email Address "{}"'.format(email))
-		except:
-			user.email = email
-	
+		validate_email(email)
+		user.email = email
 	if fname != None:
 		user.first_name = fname
 	if lname != None:
 		user.last_name = lname
 	
 	user.save()
-	
-	return error_messages
 
 
 def change_password(user, tentative_password):
