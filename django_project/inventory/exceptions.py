@@ -59,6 +59,13 @@ class InvalidPasswordError(InvalidValueError):
 	value_descriptor = 'password'
 	requirements_message = 'Valid passwords must contain at least 6 characters.'
 
+class InvalidNameError(InvalidValueError):
+	value_descriptor = 'name'
+	requirements_message = """
+	Valid names must contain at least 1 character and cannot contain apostrophes
+	or quotes.
+	"""
+
 class InvalidUsernameError(InvalidValueError):
 	value_descriptor = 'username'
 	requirements_message = 'Valid usernames must contain at least 5 characters.'
