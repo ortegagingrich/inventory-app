@@ -9,6 +9,7 @@ from django.views import generic
 from django.core.urlresolvers import reverse
 
 from inventory.models import *
+from inventory.type.operations import *
 
 #TODO: NEED REFACTOR
 
@@ -44,7 +45,6 @@ def index_page(request):
 	return render(request, template, context)
 
 
-#detail view
 def detail_page(request, type_key, error_messages=None):
 	item_type = get_object_or_404(ItemType, pk=type_key)
 	
@@ -88,6 +88,7 @@ def upc_page(request, error_messages=None, default_value=None):
 	return render(request, template, context)
 
 
+#TODO: NEED REFACTOR
 def upc_lookup(request):
 	error_messages = []
 	
@@ -132,7 +133,7 @@ def upc_lookup(request):
 	return HttpResponseRedirect(redirect_url)
 
 
-#create page
+
 def create_page(request, error_messages=None):
 	if error_messages != None:
 		if len(error_messages) == 0:
@@ -173,8 +174,8 @@ def modify_page(request, type_key, error_messages=None):
 	return render(request, template, context)
 
 
-#create
-def create_submit(request, item_type=None):
+
+def create_submit(request):
 	"""
 	Note: this is only for creating or modifying custom or upc types.
 	If the provided item type is None, a new one is created, otherwise,
@@ -183,38 +184,91 @@ def create_submit(request, item_type=None):
 	if not request.user.is_authenticated():
 		raise Http404
 	
+	(input_data, error_messages) = _parse_type_form(request)
+	
+	if len(error_messages) > 0:
+		return create_page(request, error_messages)
+	
+	
+	try:
+		item_type = create_type(request.user, **input_data)
+	except:
+		message = 'Could not create new item type.'
+		error_messages.append(message)
+	
+	
+	if len(error_messages) > 0:
+		return create_page(request, error_messages)
+	
+	
+	redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
+	return HttpResponseRedirect(redirect_url)
+
+
+
+def modify_submit(request, type_key):
+	if not request.user.is_authenticated():
+		raise Http404
+	
+	(input_data, error_messages) = _parse_type_form(request)
+	
+	if len(error_messages) > 0:
+		return modify_page(request, type_key, error_messages)
+	
+	
+	try:
+		update_type(request.user, type_key, **input_data)
+	except inventory.exceptions.InvalidValueError as error:
+		message = error.message
+		error_messages.append(message)
+	except:
+		message = 'Unable to update item type.'
+		error_messages.append(message)
+	
+	
+	if len(error_messages) > 0:
+		return modify_page(request, type_key, error_messages)
+	
+	
+	redirect_url = reverse('inventory:type:detail', args=(type_key,))
+	return HttpResponseRedirect(redirect_url)
+
+
+def _parse_type_form(request):
+	"""
+	Attempts to parse a form for the creation/modification of an item type.
+	Returns a tuple whose first component is a dictionary which can be used
+	as a keyword argument to type.operations.modify or type.operations.create.
+	The second component is an array of error messages.
+	
+	Note that no validity-checking of inputs is done at this level.
+	"""
+	input_data = {}
 	error_messages = []
 	
 	try:
 		name = request.POST['name']
-		if len(name) < 1 and item_type == None:
-			message = 'Cannot give item type name "{}".  '
-			message += 'Item Type names must have at least one character.'
-			error_messages.append(message.format(name))
-		elif '\'' in name or '\"' in name:
-			message = "Names cannot contain apostrophes or quotations."
-			error_messages.append(message)
+		input_data['name'] = name
 	except:
-		error_messages.append('Please enter a valid name.')
+		message = 'Please enter a valid name.'
+		error_messages.append(message)
 	
-	if not 'openable' in request.POST.keys():
-		error_messages.append("Please specify whether the item has multiple servings.")
-		openable = False
-	else:
+	try:
 		post_openable = request.POST['openable']
 		if post_openable == 'yes':
 			openable = True
 		elif post_openable == 'no':
 			openable = False
 		else:
-			error_messages.append("Please specify whether the item has multiple servings.")
+			raise Exception
+		input_data['openable'] = openable
+	except:
+		message = 'Please specify whether the item has multiple servings'
+		error_message.append(message)
 	
-	open_term = None
-	if openable:
-		if not 'open_term' in request.POST.keys():
-			message = 'Please indicate how long the item lasts when opened'
-			error_messages.append(message)
-		else:
+	
+	try:
+		if openable:
 			post_term = request.POST['open_term']
 			if post_term == 'unlimited':
 				open_term = None
@@ -225,119 +279,80 @@ def create_submit(request, item_type=None):
 			elif post_term == '3day':
 				open_term = timedelta(days=3)
 			elif post_term == 'other':
-				try:
-					days = int(request.POST['open_term_other'])
-					open_term = timedelta(days=days)
-				except:
-					message = 'Please indicate how long the item lasts when opened'
-					error_messages.append(message)
+				days = int(request.POST['open_term_other'])
+				open_term = timedelta(days=days)
 			else:
-				message = 'Please indicate how long the item lasts when opened'
-				error_messages.append(message)
+				raise Exception
+			input_data['open_expiration_term'] = open_term
+	except:
+		message = 'Please indicate how long the item lasts when opened'
+		error_messages.append(message)
+	
 	
 	try:
 		needed_temperature = int(request.POST['refrigeration'])
+		input_data['needed_temperature'] = needed_temperature
 	except:
 		message = 'Please indicate whether or not the item needs refrigeration'
 		error_messages.append(message)
-		needed_temperature = None
 	
 	
-	if needed_temperature == 3:
-		frozen_term = None
-	elif needed_temperature != None:
-		try:
+	try:
+		if needed_temperature < 3:
 			post_frozen = request.POST['freezable']
 			if post_frozen == 'no':
 				frozen_term = None
 			elif post_frozen == 'yes':
-				print('here1')
-				months = int(request.POST['freeze_months'])
+				months = int(reqeust.POST['freeze_months'])
 				weeks = int(request.POST['freeze_weeks'])
 				days = int(request.POST['freeze_days'])
 				frozen_term = timedelta(weeks=(weeks+4*months), days=days)
 			else:
 				raise Exception
-		except:
-			message = 'Please indicate if the item lasts longer when frozen'
-			error_messages.append(message)
+			input_data['freezer_expiration_term'] = frozen_term
+	except:
+		message = 'Please indicate if the item lasts longer when frozen'
+		error_messages.append(message)
 	
-	if len(error_messages) > 0:
-		if item_type == None:
-			return create_page(request, error_messages)
-		else:
-			return modify_page(request, item_type.id, error_messages)
 	
-	if item_type == None:
-		item_type = ItemType(
-			user = request.user,
-			name = name,
-			needed_temperature = needed_temperature,
-			openable = openable,
-			open_expiration_term = open_term,
-			freezer_expiration_term = frozen_term,
-		)
-	else:
-		item_type.needed_temperature = needed_temperature
-		item_type.openable = openable
-		item_type.open_expiration_term = open_term
-		item_type.freezer_expiration_term = frozen_term
-	
-	item_type.save()
-	
-	redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
-	return HttpResponseRedirect(redirect_url)
+	return (input_data, error_messages)
 
 
-#modify submit
-def modify_submit(request, type_key):
-	item_type = get_object_or_404(ItemType, pk=type_key)
-	
-	return create_submit(request, item_type)
 
-
-#rename
 def rename_submit(request, type_key):
-	item_type = get_object_or_404(ItemType, pk=type_key)
-	
-	if item_type.user != request.user and not request.user.is_staff:
-		raise Http404
-	elif not item_type.is_generic:
-		raise Http404
 	
 	error_messages = []
 	
 	try:
 		new_name = request.POST['rename']
-		
-		if len(new_name) < 1:
-			message = 'Cannot rename item type "{}" to "{}".  '
-			message += 'Location names must have at least one character.'
-			error_messages.append(message.format(location.name, new_name))
-		elif '\'' in new_name or '\"' in new_name:
-			message = "Names cannot contain apostrophes or quotations."
-			error_messages.append(message)
-		else:
-			item_type.name = new_name
-			item_type.save()
 	except:
 		error_messages.append('Please enter a valid name.')
 	
 	if len(error_messages) > 0:
 		return detail_page(request, type_key, error_messages)
-	else:
-		redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
-		return HttpResponseRedirect(redirect_url)
-
-
-#delete
-def delete_submit(request, type_key):
-	item_type = get_object_or_404(ItemType, pk=type_key)
 	
-	if request.user != item_type.user or not request.user.is_authenticated():
+	
+	try:
+		update_type(request.user, type_key, name=new_name)
+	except InvalidNameError as error:
+		message = error.message
+		error_messages.append(message)
+	except:
 		raise Http404
 	
-	item_type.delete()
+	if len(error_messages) > 0:
+		return detail_page(request, type_key, error_messages)
+	
+	redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
+	return HttpResponseRedirect(redirect_url)
+
+
+
+def delete_submit(request, type_key):
+	try:
+		delete_type(request.user, type_key)
+	except:
+		raise Http404
 	
 	redirect_url = reverse('inventory:type:index')
 	return HttpResponseRedirect(redirect_url)
