@@ -114,6 +114,7 @@ class ItemType(models.Model):
 	open_expiration_term = models.DurationField(null=True, blank=True)
 	freezer_expiration_term = models.DurationField(null=True, blank=True)
 	
+	initialized = models.BooleanField(default=True)
 	
 	@staticmethod
 	def retrieve_with_write_permission(user, type_id):
