@@ -103,7 +103,7 @@ def item_create_submit(request, type_key):
 	return HttpResponseRedirect(redirect_url)
 
 
-def item_open(request, item_id):
+def item_open_submit(request, item_id):
 	"""
 	Action to assign an opening date to an item.
 	"""
@@ -234,7 +234,7 @@ def item_move_submit(request, item_id):
 	return HttpResponseRedirect(redirect_url)
 
 
-def item_delete(request, item_id):
+def item_delete_submit(request, item_id):
 	"""
 	Action to remove the specified item from the database.
 	"""

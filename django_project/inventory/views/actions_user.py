@@ -12,7 +12,7 @@ import inventory.exceptions
 
 
 #login
-def login_action(request):
+def login_submit(request):
 	try:
 		username = request.POST['username']
 		password = request.POST['password']
@@ -31,7 +31,8 @@ def login_action(request):
 		error_message = "Invalid Login."
 	return views.login_page(request, error_message)
 
-def logout_action(request):
+
+def logout_submit(request):
 	logout(request)
 	return HttpResponseRedirect(reverse("inventory:inventory_greeter"))
 
@@ -64,7 +65,7 @@ def profile_submit(request):
 
 
 #Change Password
-def password_change(request):
+def password_submit(request):
 	error_messages = []
 	
 	tentative_password = request.POST['password']

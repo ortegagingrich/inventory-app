@@ -18,12 +18,12 @@
 	</li>
 	{% if not item.opened and item.user == user and item.item_type.openable %}
 	<li>
-		<a href="{% url 'inventory:item_open' item.id %}">Open</a>
+		<a href="{% url 'inventory:item_open_submit' item.id %}">Open</a>
 	</li>
 	{% endif %}
 	{% if item.user == user %}
 	<li>
-		<form action="{% url 'inventory:item_delete' item.id %}" method="post">
+		<form action="{% url 'inventory:item_delete_submit' item.id %}" method="post">
 			{% csrf_token %}
 			<input type="submit" value="Delete" onclick="return confirmWindow('Are you sure you wish to delete this item?  This action cannot be undone.')" />
 		</form>
