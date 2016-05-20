@@ -4,14 +4,22 @@ the database through these functions
 """
 import django.core.exceptions
 
-from inventory.models import ItemType
+from inventory.models import ItemType, OpenGroceryDatabaseEntry
 import inventory.exceptions
 
 
 def create_type(user, name, needed_temperature, openable, open_expiration_term=None,
-                freezer_expiration_term=None):
+                freezer_expiration_term=None, initialized=True, upc=None):
 	_validate_name(name)
 	_validate_temperature(needed_temperature)
+	
+	if upc != None:
+		try:
+			open_grocery_entry = OpenGroceryDatabaseEntry.objects.get(product_upc=upc)
+		except OpenGroceryDatabaseEntry.DoesNotExist:
+			raise inventory.exceptions.InvalidUPCError
+	else:
+		open_grocery_entry = None
 	
 	try:
 		item_type = ItemType(
@@ -21,6 +29,8 @@ def create_type(user, name, needed_temperature, openable, open_expiration_term=N
 			openable=openable,
 			open_expiration_term=open_expiration_term,
 			freezer_expiration_term=freezer_expiration_term,
+			initialized=initialized,
+			open_grocery_entry=open_grocery_entry,
 		)
 		item_type.save()
 	except:
@@ -30,7 +40,7 @@ def create_type(user, name, needed_temperature, openable, open_expiration_term=N
 
 
 def update_type(user, type_id, name=None, needed_temperature=None, openable=None,
-                open_expiration_term=-1, freezer_expiration_term=-1):
+                open_expiration_term=-1, freezer_expiration_term=-1, initialized=True):
 	# Note that the default values of open_expiration_term and freezer_expiration
 	# term are -1 instead of None because these variables might actually be
 	# null-valued and we must distinguish between a call which wishes to set
@@ -49,6 +59,7 @@ def update_type(user, type_id, name=None, needed_temperature=None, openable=None
 		item_type.open_expiration_term = open_expiration_term
 	if freezer_expiration_term != -1:
 		item_type.freezer_expiration_term = freezer_expiration_term
+	item_type.initialized = initialized
 	
 	item_type.save()
 

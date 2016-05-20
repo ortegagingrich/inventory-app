@@ -11,7 +11,6 @@ from django.core.urlresolvers import reverse
 from inventory.models import *
 from inventory.type.operations import *
 
-#TODO: NEED REFACTOR
 
 
 def index_page(request):
@@ -88,18 +87,20 @@ def upc_page(request, error_messages=None, default_value=None):
 	return render(request, template, context)
 
 
-#TODO: NEED REFACTOR
+
 def upc_lookup(request):
 	error_messages = []
 	
-	
-	upc_code = request.POST['upc_code']
 	try:
-		open_grocery_entry = OpenGroceryDatabaseEntry.objects.get(product_upc=upc_code)
+		upc = request.POST['upc_code']
+		open_grocery_entry = OpenGroceryDatabaseEntry.objects.get(product_upc=upc)
 	except OpenGroceryDatabaseEntry.DoesNotExist:
-		open_grocery_entry = None
-		message = 'No Product with UPC code "{}".'.format(upc_code)
+		message = 'No Product with UPC code "{}".'.format(upc)
 		error_messages.append(message)
+	except:
+		message = 'Please enter a valid 12 or 14 digit UPC.'
+		error_messages.append(message)
+	
 	
 	if len(error_messages) > 0:
 		return upc_page(request, error_messages, upc_code)
@@ -116,18 +117,29 @@ def upc_lookup(request):
 	
 	
 	if item_type != None:
-		if item_type.needed_temperature < 5:
+		if item_type.initialized:
 			redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
 			return HttpResponseRedirect(redirect_url)
-	else:
-		#create user-specific item
-		item_type = ItemType(
+	
+	
+	#create user-specific item
+	try:
+		item_type = create_type(
 			user=request.user,
-			open_grocery_entry=open_grocery_entry,
 			name=open_grocery_entry.product_name,
-			needed_temperature=100, #nonsense placeholder
+			needed_temperature=0,
+			openable=False,
+			initialized=False,
+			upc=upc
 		)
-		item_type.save()
+	except inventory.exceptions.InvalidUPCError:
+		message = 'No Product with UPC code "{}".'.format(upc)
+		error_messages.append(message)
+	
+	
+	if len(error_messages) > 0:
+		return upc_page(request, error_messages, upc_code)
+	
 	
 	redirect_url = reverse('inventory:type:modify_page', args=(item_type.id,))
 	return HttpResponseRedirect(redirect_url)
@@ -150,6 +162,7 @@ def create_page(request, error_messages=None):
 		'submit_url': submit_url,
 	}
 	return render(request, template, context)
+
 
 
 #modify page (almost identical to create page, except submits to modify url)

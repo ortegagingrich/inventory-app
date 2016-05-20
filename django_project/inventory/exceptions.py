@@ -21,6 +21,9 @@ class InvalidItemTypeError(InvalidIDError):
 class InvalidItemError(InvalidIDError):
 	pass
 
+class InvalidUPCError(InvalidIDError):
+	pass
+
 
 # Invalid Value errors
 
