@@ -7,11 +7,19 @@ from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 
 from inventory.user.operations import create_user, update_user, change_password
-from inventory.views import views
 import inventory.exceptions
 
 
 #login
+
+def login_page(request, error_message=None):
+	template = 'inventory/login_form.html'
+	context = {
+		'error_message': error_message,
+	}
+	return render(request, template, context)
+
+
 def login_submit(request):
 	try:
 		username = request.POST['username']
@@ -19,7 +27,7 @@ def login_submit(request):
 		user = authenticate(username=username, password=password)
 	except:
 		#login somehow failed
-		return views.login_page(request, "Invalid Login.")
+		return login_page(request, "Invalid Login.")
 	
 	if user != None:
 		if user.is_active:
@@ -29,7 +37,7 @@ def login_submit(request):
 			error_message = "Account Inactive."
 	else:
 		error_message = "Invalid Login."
-	return views.login_page(request, error_message)
+	return login_page(request, error_message)
 
 
 def logout_submit(request):
@@ -37,7 +45,34 @@ def logout_submit(request):
 	return HttpResponseRedirect(reverse("inventory:inventory_greeter"))
 
 
-#Profile modification
+#Profile operations
+
+
+def signup_page(request, error_message=None):
+	template = 'inventory/signup_form.html'
+	context = {
+		'error_messages': error_messages,
+	}
+	return render(request, template, context)
+
+
+def profile_page(request, error_messages=None):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	template = 'inventory/profile.html'
+	context = {
+		'error_messages': error_messages,
+	}
+	return render(request, template, context)
+
+def profile_modify(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	template = 'inventory/profile_modify.html'
+	context = {}
+	return render(request, template, context)
+
+
 def profile_submit(request):
 	error_messages = []
 	
@@ -51,17 +86,25 @@ def profile_submit(request):
 	
 	
 	if len(error_messages) > 0:
-		return views.profile_page(request, error_messages)
+		return profile_page(request, error_messages)
 	
 	try:
 		update_user(user=request.user, email=email, fname=fname, lname=lname)
 	except inventory.exceptions.InvalidValueError as error:
 		message = error.message
-		return views.profile_page(request, [message])
+		return profile_page(request, [message])
 	except:
 		raise Http404
 	
-	return views.profile_page(request)
+	return profile_page(request)
+
+
+def password_modify(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	template = 'inventory/password_modify.html'
+	context = {}
+	return render(request, template, context)
 
 
 #Change Password
@@ -86,7 +129,7 @@ def password_submit(request):
 		error_messages = ['Password Successfully Reset.']
 	
 	#Redirect to the profile page
-	return views.profile_page(request, error_messages=error_messages)
+	return profile_page(request, error_messages=error_messages)
 
 
 #signup
@@ -94,7 +137,7 @@ def signup_submit(request):
 	
 	#in case of failure
 	def fail(messages):
-		return views.signup_page(request, error_messages=messages)
+		return signup_page(request, error_messages=messages)
 	
 	try:
 		username = request.POST['username']

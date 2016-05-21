@@ -4,8 +4,8 @@ ItemType URLs; included by inventory_urls
 
 from django.conf.urls import url
 
-from views import views_type as vt
-from views import actions_item as vi
+from inventory.views import views_type as vt
+from inventory.views import views_item as vi
 
 app_name = 'type'
 urlpatterns=[

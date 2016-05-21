@@ -4,7 +4,7 @@ Location URLs; included by inventory_urls
 
 from django.conf.urls import url
 
-from views import views_location as vl
+from inventory.views import views_location as vl
 
 app_name = 'location'
 urlpatterns = [
