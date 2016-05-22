@@ -164,8 +164,6 @@ def signup_submit(request):
 		message = 'Failed to create new account.'
 		return fail([message])
 	
-	reset_password(user)
-	
 	#Display Success Page
 	template = 'inventory/signup_success.html'
 	context = {

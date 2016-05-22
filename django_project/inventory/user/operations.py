@@ -16,10 +16,7 @@ def create_user(username, email, fname=None, lname=None):
 	Attempts to create a user using the provided information.
 	"""
 	
-	try:
-		validate_email(email)
-	except ValidationError:
-		raise inventory.exceptions.InvalidEmailError(email)
+	
 	
 	
 	#Next, check to make sure that the username meets the criteria
@@ -29,16 +26,27 @@ def create_user(username, email, fname=None, lname=None):
 		raise inventory.exceptions.UnavailableUsernameError(username)
 	
 	
+	try:
+		validate_email(email)
+	except ValidationError:
+		raise inventory.exceptions.InvalidEmailError(email)
 	
-	#TODO: better temporary password
-	temporary_password = 'password'
 	
 	#build the account object
 	try:
-		user = User.objects.create_user(username, email, temporary_password)
+		user = User.objects.create_user(username, email, 'thou art a knave')
 		defaults.create_user_defaults(user)
 	except:
 		raise inventory.exceptions.UserCreateError
+	
+	#this will fail if the provided email is invalid
+	try:
+		temporary_password = reset_password(user)
+	except Exception as exception:
+		#Did not work out, delete the user
+		user.delete()
+		raise exception
+	
 	
 	return user
 

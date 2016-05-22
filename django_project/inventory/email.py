@@ -4,6 +4,9 @@ Contains routines for sending emails to users.
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 
+import inventory.exceptions
+
+
 DOMAIN = '127.0.0.1'
 FROM_EMAIL = 'ortegagingrich@gmail.com'
 
@@ -35,5 +38,10 @@ def send_temporary_password(user, temporary_password):
 	
 	mail = EmailMessage(subject, message, FROM_EMAIL, [user.email])
 	mail.content_subtype = 'html'
-	mail.send()
+	
+	try:
+		mail.send()
+	except Exception as ex:
+		raise inventory.exceptions.InvalidEmailException(user.email)
+	
 
