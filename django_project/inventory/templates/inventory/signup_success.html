@@ -12,7 +12,11 @@
 
 Congratulations.  You have successfully created an account with username "{{username}}".  
 {% if temporary_password %}
-	  <font color="yellow">Your temporary password is "{{temporary_password}}".</font>
+	<font color="yellow">Your temporary password is "{{temporary_password}}".</font>
+{% elif email %}
+	<font color="yellow">
+		An email containing your temporary password has been sent to {{email}}.
+	</font>
 {% endif %}
 <br>
 Please sign in below.

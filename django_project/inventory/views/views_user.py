@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
 
-from inventory.user.operations import create_user, update_user, change_password
+from inventory.user.operations import *
 import inventory.exceptions
 
 
@@ -164,13 +164,13 @@ def signup_submit(request):
 		message = 'Failed to create new account.'
 		return fail([message])
 	
+	reset_password(user)
 	
 	#Display Success Page
 	template = 'inventory/signup_success.html'
 	context = {
 		'username': user.username,
-		'temporary_password': temporary_password,
-		'error_messages': error_messages,
+		'email': user.email,
 	}
 	return render(request, template, context)
 

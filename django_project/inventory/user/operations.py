@@ -4,6 +4,7 @@ Contains functions to attempt to create/modify user accounts.
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.utils.crypto import get_random_string
 
 from inventory.user import defaults
 import inventory.exceptions
@@ -59,17 +60,30 @@ def update_user(user, email=None, fname=None, lname=None):
 	user.save()
 
 
+CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+def reset_password(user):
+	"""
+	Generates a randomly generated temporary password and sends it to the user's
+	email address.
+	"""
+	temporary_password = get_random_string(15, CHARS)
+	change_password(user, temporary_password)
+	
+	#TODO: send email to user
+	
+	return temporary_password
+
+
 def change_password(user, tentative_password):
 	"""
 	Attempts to change the user's password.
 	"""
-	error_messages = []
 	
 	if len(tentative_password) < 6:
 		raise inventory.exceptions.InvalidPasswordError(password)
 	
 	#change password
-	request.user.set_password(tentative_password)
-	request.user.save()
+	user.set_password(tentative_password)
+	user.save()
 
 
