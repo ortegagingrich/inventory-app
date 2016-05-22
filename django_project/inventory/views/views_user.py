@@ -48,7 +48,7 @@ def logout_submit(request):
 #Profile operations
 
 
-def signup_page(request, error_message=None):
+def signup_page(request, error_messages=None):
 	template = 'inventory/signup_form.html'
 	context = {
 		'error_messages': error_messages,
