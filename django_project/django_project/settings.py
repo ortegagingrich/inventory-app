@@ -48,6 +48,22 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
+try:
+	from secret import EMAIL_PASSWORD
+	
+	EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+	EMAIL_HOST = 'smtp.gmail.com'
+	EMAIL_PORT = 465
+	EMAIL_USE_SSL = True
+	EMAIL_HOST_USER = 'ortegagingrich@gmail.com'
+	EMAIL_HOST_PASSWORD = EMAIL_PASSWORD
+	DEFAULT_EMAIL_FROM = 'ortegagingrich@gmail.com'
+except:
+	pass
+
+
+
 # Application definition
 
 DEFAULT_APPS = [

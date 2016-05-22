@@ -8,6 +8,7 @@ from django.utils.crypto import get_random_string
 
 from inventory.user import defaults
 import inventory.exceptions
+import inventory.email
 
 
 def create_user(username, email, fname=None, lname=None):
@@ -69,7 +70,7 @@ def reset_password(user):
 	temporary_password = get_random_string(15, CHARS)
 	change_password(user, temporary_password)
 	
-	#TODO: send email to user
+	inventory.email.send_temporary_password(user, temporary_password)
 	
 	return temporary_password
 
