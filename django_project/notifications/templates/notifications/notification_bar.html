@@ -1,0 +1,22 @@
+{% if notification_count %}
+	<font color="red">
+		You currently have
+		{% if notification_url %}
+		<a href="{{ notification_url }}">
+		{{ notification_count }} unread notification{{ notification_count | pluralize }}
+		</a>
+		.
+		{% else %}
+		{{ notification_count }} unread notification{{ notification_count | pluralize }}.
+		{% endif %}
+	</font>
+{% else %}
+	<font color="green">
+		You currently have 
+		{% if notification_url %}
+			<a href="{{ notification_url }}">no unread notifications</a>.
+		{% else %}
+			no unread notifications.
+		{% endif %}
+	</font>	
+{% endif %}

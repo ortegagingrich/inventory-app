@@ -1,3 +1,5 @@
+{% load notification_bar %}
+
 <a href="{% url 'inventory:inventory_greeter' %}">
 	[TEMPORARY: TO FRONT PAGE]
 </a>
@@ -16,14 +18,13 @@
 	<a href="{% url 'inventory:profile' %}">
 		{{ user.get_username }}
 	</a>
-	.&nbsp&nbsp
-	
-	<a href="{% url 'inventory:notification_page' %}">
-		[View Notifications]
-	</a>
 	
 	&nbsp&nbsp
 	<a href="{% url 'inventory:logout' %}">
 		[Logout]
 	</a>
+	
+	<br />
+	{% url 'inventory:notification_page' as notification_url %}
+	{% notification_bar user notification_url %}
 {% endif %}

@@ -14,4 +14,15 @@ class NotificationModel(models.Model):
 	insert_text = models.CharField(max_length=500)
 	unread = models.BooleanField(default=True)
 
+def add_notification_link(user, name, message, url):
+	"""
+	Creates a notification which is displayed as a link to the provided url.
+	"""
+	notification = NotificationModel(
+		user=user,
+		name=name,
+		insert_text='<a href="{}">{}</a>'.format(url, message)
+	)
+	notification.save()
+	return notification
 
