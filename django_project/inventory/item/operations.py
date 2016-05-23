@@ -19,7 +19,8 @@ def create_item(user, location_id, type_id, printed_expiration_date):
 	
 	#create the item
 	try:
-		new_item = Item(user=user,
+		new_item = Item(
+			user=user,
 			location=location,
 			item_type=item_type,
 			printed_expiration_date=printed_expiration_date,

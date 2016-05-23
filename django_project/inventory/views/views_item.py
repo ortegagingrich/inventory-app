@@ -125,7 +125,7 @@ def item_create_submit(request, type_key):
 			type_id=item_type.id,
 			printed_expiration_date=printed_expiration_date,
 		)
-	except InvalidValueError as error:
+	except inventory.exceptions.InvalidValueError as error:
 		message = error.message
 		error_messages.append(message)
 	except:

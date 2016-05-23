@@ -54,18 +54,18 @@ class Location(models.Model):
 	frozen = models.BooleanField(default=False)
 	
 	@staticmethod
-	def retrieve_with_write_permision(user, location_id):
+	def retrieve_with_write_permission(user, location_id):
 		"""
 		Attempts to retrieve an item with the given id belonging to the given user.
 		If no such item exists, the appropriate error is raised
 		"""
 		try:
-			item = Item.objects.get(pk=item_id)
-			if item.user != user:
+			location = Location.objects.get(pk=location_id)
+			if location.user != user:
 				raise Exception
 		except:
-			raise inventory.exceptions.InvalidItemError(item_id)
-		return item
+			raise inventory.exceptions.InvalidItemError(location_id)
+		return location
 	
 	
 	@property
@@ -267,13 +267,13 @@ class Item(models.Model):
 		Computes the actual expiration date, assuming the item is stored in its
 		current conditions indefinitely.
 		"""
-		if self.printed_expiration_date == None:
-			return None
 		
 		#first, check for immediate disqualifications (improper storage)
 		if self._improperly_stored:
 			return min(self._location_date, date.today()) - timedelta(days=1)
 		
+		if self.printed_expiration_date == None:
+			return None
 		
 		modified_date = self.printed_expiration_date
 		
