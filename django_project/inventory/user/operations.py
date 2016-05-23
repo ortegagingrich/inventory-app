@@ -66,7 +66,7 @@ def update_user(user, email=None, fname=None, lname=None):
 	user.save()
 
 
-CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789'
 def reset_password(user):
 	"""
 	Generates a randomly generated temporary password and sends it to the user's
