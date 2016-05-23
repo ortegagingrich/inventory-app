@@ -109,6 +109,8 @@ def password_modify(request):
 
 #Change Password
 def password_submit(request):
+	from django.contrib.auth import update_session_auth_hash
+	
 	error_messages = []
 	
 	tentative_password = request.POST['password']
@@ -120,6 +122,7 @@ def password_submit(request):
 	
 	try:
 		change_password(request.user, tentative_password)
+		update_session_auth_hash(request, request.user)
 	except inventory.exceptions.InvalidPasswordError as error:
 		message = error.message
 		error_messages.append(message)
@@ -132,7 +135,48 @@ def password_submit(request):
 	return profile_page(request, error_messages=error_messages)
 
 
-#signup
+#password reset views
+
+def password_reset(request, error_messages=None):
+	if error_messages != None:
+		if len(error_messages) == 0:
+			error_messages = None
+	
+	template = 'inventory/password_reset_form.html'
+	context = {
+		'error_messages': error_messages,
+	}
+	
+	return render(request, template, context)
+
+
+def password_reset_submit(request):
+	error_messages = []
+	print request.POST
+	try:
+		email = request.POST['email']
+	except:
+		message = 'Please enter a valid email address.'
+		error_messages.append(message)
+	
+	if len(error_messages) > 0:
+		return password_reset(request, error_messages)
+	
+	
+	#get users matching the email address and send them reset emails
+	users = User.objects.filter(email=email)
+	for user in users:
+		reset_password(user)
+	
+	
+	template = 'inventory/password_reset_submit.html'
+	context = {
+		'email': email,
+	}
+	
+	return render(request, template, context)
+
+
 def signup_submit(request):
 	
 	#in case of failure

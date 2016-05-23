@@ -16,9 +16,6 @@ def create_user(username, email, fname=None, lname=None):
 	Attempts to create a user using the provided information.
 	"""
 	
-	
-	
-	
 	#Next, check to make sure that the username meets the criteria
 	if len(username) < 5:
 		raise inventory.exceptions.InvalidUsernameError(username)
@@ -74,6 +71,7 @@ def reset_password(user):
 	"""
 	Generates a randomly generated temporary password and sends it to the user's
 	email address.
+	Warning: user is logged out.
 	"""
 	temporary_password = get_random_string(15, CHARS)
 	change_password(user, temporary_password)
@@ -86,10 +84,11 @@ def reset_password(user):
 def change_password(user, tentative_password):
 	"""
 	Attempts to change the user's password.
+	Warning: user is logged out if successful.
 	"""
 	
 	if len(tentative_password) < 6:
-		raise inventory.exceptions.InvalidPasswordError(password)
+		raise inventory.exceptions.InvalidPasswordError(tentative_password)
 	
 	#change password
 	user.set_password(tentative_password)

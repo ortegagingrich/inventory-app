@@ -33,6 +33,10 @@ user_urlpatterns = [
 	url(r'^signup/$', views_user.signup_page, name='signup'),
 	#/inventory/signup/submit/
 	url(r'^signup/submit/$', views_user.signup_submit, name='signup_submit'),
+	#/inventory/reset/
+	url(r'^reset/$', views_user.password_reset, name='password_reset'),
+	#/inventory/reset/submit/
+	url(r'^reset/submit/', views_user.password_reset_submit, name='password_reset_submit'),
 	#/inventory/notifications/
 	url(r'^notifications/$', views_notification.notification_page, name='notification_page'),
 	#/inventory/index/
