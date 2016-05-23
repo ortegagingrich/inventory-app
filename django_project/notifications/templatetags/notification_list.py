@@ -14,8 +14,8 @@ def notification_list(user):
 	
 	#set notifications as read
 	for notification in notifications:
-		notifications.unread = False
-		notifications.save()
+		notification.unread = False
+		notification.save()
 	
 	context = {
 		'notifications': notifications,

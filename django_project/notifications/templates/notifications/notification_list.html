@@ -12,7 +12,7 @@
 	<ul>
 	{% for notification in notifications %}
 		<li>
-			{{notification.name}} :<br /> {{notification.insert_text}}
+			{% autoescape off %}{{notification}}{% endautoescape %}
 		</li>
 	{% endfor %}
 	</ul>

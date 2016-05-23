@@ -4,6 +4,9 @@ Contains methods for dealing with user notifications
 from inventory.models import Item, UserProfile
 
 
+#TODO: Deprecated: move any useful functionality to the notifications app
+
+
 def has_notifications(user):
 	"""
 	Checks to see if the provided user has outstanding notifications
@@ -18,20 +21,9 @@ def get_notifications(user):
 	"""
 	notifications = []
 	
-	_check_notifications_account(user, notifications)
 	_check_notifications_expired(user, notifications)
 	
 	return notifications
-
-
-def _check_notifications_account(user, notifications):
-	"""
-	If there are any notifications related to the user's account (e.g. needs a
-	password reset, etc.), appends them to the provided notification list
-	"""
-	if UserProfile.needs_reset(user):
-		notification = 'You must reset your password.'
-		notifications.append(notification)
 
 
 def _check_notifications_expired(user, notifications):

@@ -4,9 +4,11 @@ from datetime import date, timedelta
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.db import models
-from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
+
+from notifications.models import add_notification_link, NotificationModel
 
 import inventory.exceptions
 
@@ -162,7 +164,6 @@ class Item(models.Model):
 	item_type = models.ForeignKey(ItemType, on_delete = models.CASCADE)
 	
 	
-	
 	printed_expiration_date = models.DateField(blank=True, null=True)
 	opened_date = models.DateField(null=True, blank=True)
 	
@@ -171,6 +172,10 @@ class Item(models.Model):
 	_improperly_stored = models.BooleanField(default=False)
 	#the date when the item was placed in its last location; if null
 	_location_date = models.DateField(null=True)
+	
+	#indicates whether or not an expiration notification has been issued
+	#This is to prevent double-reporting of expiration.
+	_expiration_notified = models.BooleanField(default=False)
 	
 	
 	@staticmethod
@@ -200,6 +205,35 @@ class Item(models.Model):
 			if item.expired:
 				expired_items.append(item)
 		return expired_items
+	
+	
+	#TODO: figure out when the appropriate time is to call this
+	# Called in the following circumstances:
+	#    1) when the user logs in
+	#    2) TODO: setup celery task to check this at regular intervals
+	@staticmethod
+	def update_notifications(user):
+		"""
+		Updates the notifications related to inventory items for the provided
+		user.  For example, it creates notifications for all expired items
+		"""
+		items = Item.get_expired_items(user)
+		for item in items:
+			if not item._expiration_notified:
+				message = 'An item "{}" is expired.  Click here to go to its page.'
+				
+				add_notification_link(
+					user=user,
+					name='Expired Item: {}'.format(item.item_type.name),
+					message=message.format(item.item_type.name),
+					url=item.url,
+					id_string='item_{}'.format(item.id)
+				)
+				
+				item._expiration_notified = True
+				item.save()
+	
+		
 	
 	
 	def __setattr__(self, k, v):
@@ -258,6 +292,13 @@ class Item(models.Model):
 		
 		return exp_date
 	
+	@property
+	def url(self):
+		"""
+		Returns the url of this item's detail page
+		"""
+		return reverse('inventory:item_detail', args=(self.id,))
+	
 	
 	def on_state_change(self):
 		"""
@@ -305,25 +346,6 @@ class UserProfile(models.Model):
 	_needs_password_reset = models.BooleanField(default=True)
 	
 	
-	@receiver(models.signals.post_save, sender=User)
-	def create_profile(sender, instance, created, **kwargs):
-		if created:
-			UserProfile.on_require_reset(user=instance)
-	
-	
-	@receiver(models.signals.pre_save, sender=User)
-	def update_profile(sender, instance, **kwargs):
-		if instance:
-			new_password = instance.password
-			try:
-				old_password = User.objects.get(pk=instance.pk).password
-			except User.DoesNotExist:
-				#This means that the user is just being created; still needs password reset
-				return
-			
-			if new_password != old_password:
-				UserProfile.on_reset(user=instance)
-	
 	@staticmethod
 	def needs_reset(user):
 		"""Checks to see if the provided user needs a password reset"""
@@ -342,6 +364,16 @@ class UserProfile(models.Model):
 			profile = UserProfile.objects.get(user=user)
 			profile._needs_password_reset = False
 			profile.save()
+			
+			#get rid of any unread password reset notifications
+			notifications = NotificationModel.objects.filter(
+				user=user,
+				id_string=reset_password
+			)
+			for notification in notifications:
+				if notification.unread:
+					notification.delete()
+			
 		except ObjectDoesNotExist:
 			pass
 	
@@ -355,7 +387,16 @@ class UserProfile(models.Model):
 		if not profile._needs_password_reset:
 			profile._needs_password_reset = True
 			profile.save()
+			
+			#create a notification for the reset
+			add_notification_link(
+				user=user,
+				name='Reset Password',
+				message='Please reset your password as soon as possible.',
+				id_string='reset_password'
+			)
 	
 	
-
+#hack to make sure signals are properly initiated
+from inventory import user, item
 
