@@ -64,9 +64,3 @@ admin_urlpatterns = [
 
 urlpatterns = user_urlpatterns + admin_urlpatterns
 
-def __test__():
-	print "test"
-	views.__test__()
-
-if __name__ == '__main__':
-	__test__()

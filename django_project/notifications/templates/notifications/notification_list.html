@@ -13,6 +13,11 @@
 	{% for notification in notifications %}
 		<li>
 			{% autoescape off %}{{notification}}{% endautoescape %}
+			<form method="post" action="{% url 'notifications:delete' notification.id %}">
+				{% csrf_token %}
+				<input type="hidden" name="redirect_url" value="{{ redirect_url }}" />
+				<input type="submit" value="Delete Notification" />
+			</form>
 		</li>
 	{% endfor %}
 	</ul>

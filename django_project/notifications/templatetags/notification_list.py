@@ -6,7 +6,7 @@ register = template.Library()
 
 
 @register.inclusion_tag('notifications/notification_list.html')
-def notification_list(user):
+def notification_list(request, user):
 	"""
 	Template Tag to produce a detailed list of notifications for the provided user.
 	"""
@@ -20,6 +20,7 @@ def notification_list(user):
 	context = {
 		'notifications': notifications,
 		'notification_count': len(notifications),
+		'redirect_url': request.path
 	}
 	return context
 

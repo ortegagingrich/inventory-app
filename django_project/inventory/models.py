@@ -220,12 +220,13 @@ class Item(models.Model):
 		items = Item.get_expired_items(user)
 		for item in items:
 			if not item._expiration_notified:
-				message = 'An item "{}" is expired.  Click here to go to its page.'
+				message = 'An item "{}" expired on {}.  '
+				message += 'Click here to go to its page.'
 				
 				add_notification_link(
 					user=user,
 					name='Expired Item: {}'.format(item.item_type.name),
-					message=message.format(item.item_type.name),
+					message=message.format(item.item_type.name, item.expiration_date),
 					url=item.url,
 					id_string='item_{}'.format(item.id)
 				)

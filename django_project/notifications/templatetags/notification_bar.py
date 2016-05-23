@@ -10,7 +10,7 @@ def notification_bar(user, notification_url=None):
 	"""
 	Template Tag to produce a notification bar for the provided user.
 	"""
-	notifications = NotificationModel.objects.filter(user=user)
+	notifications = NotificationModel.objects.filter(user=user, unread=True)
 	
 	context = {
 		'notification_count': len(notifications),
