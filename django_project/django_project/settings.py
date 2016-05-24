@@ -80,6 +80,7 @@ THIRD_PARTY_APPS = []
 LOCAL_APPS = [
 	'inventory.apps.InventoryConfig',
 	'notifications.apps.NotificationsConfig',
+	'search.apps.SearchConfig',
 ]
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
