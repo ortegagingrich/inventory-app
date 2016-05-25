@@ -4,6 +4,8 @@ Contains routines for sending emails to users.
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 
+from django_project import settings
+
 import inventory.exceptions
 
 
@@ -36,7 +38,13 @@ def send_temporary_password(user, temporary_password):
 	</html>
 	""".format(user.username, temporary_password, login_url)
 	
-	mail = EmailMessage(subject, message, FROM_EMAIL, [user.email])
+	#only send to the user's actual email if not in debug mode
+	if not settings.DEBUG:
+		email = user.email
+	else:
+		email = FROM_EMAIL
+	
+	mail = EmailMessage(subject, message, FROM_EMAIL, [email])
 	mail.content_subtype = 'html'
 	
 	try:
