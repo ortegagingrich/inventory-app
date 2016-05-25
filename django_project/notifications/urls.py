@@ -1,7 +1,7 @@
 """
 URLS directly related to the notification system
 """
-from django.conf.urls import include, url
+from django.conf.urls import url
 
 from notifications import views
 
