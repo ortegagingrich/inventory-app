@@ -1,0 +1,25 @@
+
+<h2>~Search Box~</h2>
+
+Please fill in at least one of the search fields below.
+<form method="post" action="{{submit_url}}">
+	{% csrf_token %}
+	
+	{% for field in search_fields %}
+		{{ field }} :
+		<input type="text" name="{{ field }}" />
+	{% endfor %}
+	
+	<br />
+	<input type="submit" value="Search">
+</form>
+
+
+{% if results_list %}
+	{% for result in results_list %}
+		{% autoescape off %}
+			{{ result }}
+		{% endautoescape %}
+	{% endfor %}
+{% endif %}
+

@@ -23,6 +23,7 @@ def redirect_to_inventory(request):
 urlpatterns = [
 	url(r'^inventory/', include('inventory.urls.inventory_urls'), name='inventory'),
 	url(r'^notifications/', include('notifications.urls'), name='notifications'),
+	url(r'^search/', include('search.urls'), name='search'),
     url(r'^admin/', admin.site.urls, name='admin'),
     url(r'^$', redirect_to_inventory),
 ]
