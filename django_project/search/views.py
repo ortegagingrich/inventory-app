@@ -24,6 +24,8 @@ def test_view(request):
 	template = 'search/test.html'
 	context = {
 		'search_settings': search_settings,
+		'result_template': 'search/test_result.html',
+		'object_label': 'entry',
 	}
 	
 	return render(request, template, context)

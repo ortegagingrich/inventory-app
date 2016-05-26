@@ -32,12 +32,17 @@ class SearchSettings(object):
 				argument_name = '{}__icontains'.format(field_name)
 				search_args[argument_name] = field_value
 		
-		results = self.search_model.objects.filter(**search_args)
 		
-		print results.query
+		# only do the search if there is at least one non-empty input
+		if len(search_args) > 0:
+			results = self.search_model.objects.filter(**search_args)
+		else:
+			results = self.search_model.objects.none()
+		
 		
 		if len(results) > MAX_DISPLAY_ITEMS:
 			results = results[0:MAX_DISPLAY_ITEMS - 1]
 		
 		return results
+
 
