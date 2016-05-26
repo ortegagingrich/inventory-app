@@ -14,18 +14,20 @@ def test_view(request):
 	
 	
 	search_fields = ['word',]
+	display_names = {'word': 'Word'}
 	
 	search_settings = SearchSettings(
 		search_model=DictionaryEntry,
 		field_names=search_fields,
+		field_display_names=display_names,
+		result_template='search/test_result.html',
+		object_label='entry',
 	)
 	
 	
 	template = 'search/test.html'
 	context = {
 		'search_settings': search_settings,
-		'result_template': 'search/test_result.html',
-		'object_label': 'entry',
 	}
 	
 	return render(request, template, context)

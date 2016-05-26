@@ -8,17 +8,41 @@ from .exceptions import InvalidSearchSettings
 MAX_DISPLAY_ITEMS = 50
 
 class SearchSettings(object):
+	"""
+	Object to hold settings related to the search itself as well as how it is
+	to be displayed
+	"""
 	
-	def __init__(self, search_model, field_names, user=None):
+	def __init__(
+		self, search_model, field_names,
+		field_display_names=None,
+		user=None,
+		result_template=None,
+		no_match_template=None,
+		object_label='object',
+		context=None,
+	):
 		if len(field_names) == 0:
 			raise InvalidSearchSettings
 		
 		self.user = user
 		self.search_model = search_model
 		
+		self.result_template = result_template
+		self.no_match_template = no_match_template
+		self.object_label = object_label
+		self.context = context
+		
 		# a dictionary containing search field names and results
-		self.fields = dict([(field, None) for field in field_names])
-	
+		self.fields = {}
+		self.field_display_names = {}
+		for field in field_names:
+			self.fields[field] = None
+			try:
+				self.field_display_names[field] = field_display_names[field]
+			except KeyError:
+				self.field_display_names[field] = field
+
 	
 	def execute_search(self):
 		"""
