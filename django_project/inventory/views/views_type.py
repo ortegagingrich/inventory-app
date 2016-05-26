@@ -8,6 +8,8 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.core.urlresolvers import reverse
 
+from search.search import SearchSettings
+
 from inventory.models import *
 from inventory.type.operations import *
 
@@ -42,6 +44,38 @@ def index_page(request):
 	template = 'inventory/type/index.html'
 	
 	return render(request, template, context)
+
+
+def search_page(request):
+	"""
+	A page with a search box for searching item types.
+	"""
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	
+	search_fields = ['name',]
+	display_names = {'name': 'Product Name or Description',}
+	
+	static_search_fields = {
+		'user': request.user,
+	}
+	
+	search_settings = SearchSettings(
+		static_fields=static_search_fields,
+		search_model=ItemType,
+		field_names=search_fields,
+		field_display_names=display_names,
+		result_template='inventory/type/summary.html',
+		object_label='type',
+	)
+	
+	template = 'inventory/type/search.html'
+	context = {
+		'search_settings': search_settings,
+	}
+	
+	return render(request, template, context)
+
 
 
 def detail_page(request, type_key, error_messages=None):

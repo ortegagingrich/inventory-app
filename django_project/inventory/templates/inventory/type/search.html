@@ -1,0 +1,14 @@
+<div class="basic">
+	{% include "inventory/set_style.html" %}
+</div>
+
+<div class="basic">
+	{% include "inventory/inventory_header.html" %}
+</div>
+
+<h2>Item Type Search</h2>
+
+<div class="basic">
+	{% load search_box %}
+	{% search_box request search_settings %}
+</div>
