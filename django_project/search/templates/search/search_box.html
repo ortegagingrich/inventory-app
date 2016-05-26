@@ -15,11 +15,13 @@ Please fill in at least one of the search fields below.
 </form>
 
 
-{% if results_list %}
-	{% for result in results_list %}
+{% if rendered_results_list %}
+	<ul>
+	{% for rendered_result in rendered_results_list %}
 		{% autoescape off %}
-			{{ result }}
+			<li>{{ rendered_result }}</li>
 		{% endautoescape %}
 	{% endfor %}
+	</ul>
 {% endif %}
 

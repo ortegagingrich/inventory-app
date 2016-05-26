@@ -4,7 +4,7 @@ URLs directly related to the search app
 from django.conf.urls import url
 
 from django_project.settings import DEBUG
-from search import views
+from . import views
 
 
 app_name = 'search'
