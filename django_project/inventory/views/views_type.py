@@ -81,6 +81,11 @@ def search_page(request):
 def detail_page(request, type_key, error_messages=None):
 	item_type = get_object_or_404(ItemType, pk=type_key)
 	
+	#if the type needs information to be completed
+	if not item_type.initialized:
+		redirect_url = reverse('inventory:type:modify_page', args=(item_type.id,))
+		return HttpResponseRedirect(redirect_url)
+	
 	
 	if item_type.is_custom:
 		read_only = False
@@ -154,21 +159,20 @@ def upc_lookup(request):
 		if item_type.initialized:
 			redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
 			return HttpResponseRedirect(redirect_url)
-	
-	
-	#create user-specific item
-	try:
-		item_type = create_type(
-			user=request.user,
-			name=open_grocery_entry.product_name,
-			needed_temperature=0,
-			openable=False,
-			initialized=False,
-			upc=upc
-		)
-	except inventory.exceptions.InvalidUPCError:
-		message = 'No Product with UPC code "{}".'.format(upc)
-		error_messages.append(message)
+	else:
+		#create user-specific item
+		try:
+			item_type = create_type(
+				user=request.user,
+				name=open_grocery_entry.product_name,
+				needed_temperature=0,
+				openable=False,
+				initialized=False,
+				upc=upc
+			)
+		except inventory.exceptions.InvalidUPCError:
+			message = 'No Product with UPC code "{}".'.format(upc)
+			error_messages.append(message)
 	
 	
 	if len(error_messages) > 0:
