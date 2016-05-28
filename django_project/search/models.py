@@ -13,6 +13,11 @@ class DictionaryEntry(models.Model):
 	def __str__(self):
 		return self.word
 
+class DuplicateEntry(models.Model):
+	wordkey = models.CharField(max_length = 35)
+	defval = models.CharField(max_length = MAX_DEF_LENGTH + 100)
+
+
 
 def refresh_database():
 	"""
