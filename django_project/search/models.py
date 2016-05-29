@@ -25,6 +25,7 @@ def refresh_database():
 	"""
 	#first clear the existing database
 	DictionaryEntry.objects.all().delete()
+	DuplicateEntry.objects.all().delete
 	
 	print('Database purged.')
 	
@@ -32,12 +33,16 @@ def refresh_database():
 	data_dictionary = load_dictionary_data()
 	
 	new_data = []
+	new_duplicates = []
 	for word, definition in data_dictionary.iteritems():
 		if(len(definition) <= MAX_DEF_LENGTH):
 			new_data.append(DictionaryEntry(word=word, definition=definition))
+			defval = 'Confucious say: ' + definition
+			new_duplicates.append(DuplicateEntry(wordkey=word, defval=defval))
 	
 	print('Starting Bulk Create')
 	DictionaryEntry.objects.bulk_create(new_data)
+	DuplicateEntry.objects.bulk_create(new_duplicates)
 	print('Finished Bulk Create')
 			
 	
