@@ -12,16 +12,15 @@ class SearchSettings(object):
 	"""
 	
 	def __init__(
-		self, search_model, field_names,
+		self, search_model, field_sources,
 		max_display_items = 50,
-		field_display_names=None,
 		static_fields=None,
 		result_template=None,
 		no_match_template=None,
 		object_label='object',
 		context=None,
 	):
-		if len(field_names) == 0:
+		if len(field_sources) == 0:
 			raise InvalidSearchSettings
 		
 		self.search_model = search_model
@@ -31,16 +30,21 @@ class SearchSettings(object):
 		self.object_label = object_label
 		self.context = context
 		
-		# a dictionary containing search field names and results
+		# a dictionary whose keys are the attribute names of the models to be
+		# searched and whose values will be replaced with the parsed values from
+		# the input fields
 		self.fields = {}
-		self.field_display_names = {}
-		for field in field_names:
+		for field in field_sources.keys():
 			self.fields[field] = None
-			try:
-				self.field_display_names[field] = field_display_names[field]
-			except KeyError:
-				self.field_display_names[field] = field
 		
+		# a dictionary whose keys are the attribute names of the models to be
+		# searched and whose values are the names of the html input element to
+		# be used to obtain the value
+		self.field_sources = field_sources
+		
+		# static fields are for searches where there are fixed values at the
+		# beginning.  For example, a search might be restricted to only items
+		# belonging to a certain user. (e.g. static_fields = {'user': user})
 		if static_fields != None:
 			self.static_fields = static_fields
 		else:

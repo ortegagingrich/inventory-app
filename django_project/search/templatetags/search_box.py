@@ -1,5 +1,3 @@
-from functools import partial
-
 from django import template
 from django.template.loader import render_to_string
 
@@ -10,16 +8,18 @@ register = template.Library()
 def search_box(request, search_settings):
 	#TODO: Add Docstring
 	
-	# check to see if a search request has already been made
-	try:
-		for field_name in search_settings.fields.keys():
-			val = request.POST[field_name]
+	# If no request has been made, (i.e. the page is loaded for the first tiem)
+	# show no results
+	if len(request.POST) == 0:
+		rendered_results_list = None
+	else: # A query is being made, so parse the input fields
+		# fill in search fields
+		for field_name, source in search_settings.field_sources.iteritems():
+			val = request.POST[source]
 			if len(val) > 0:
 				search_settings.fields[field_name] = val
-	except:
-		# no search has been submitted yet, so no results
-		rendered_results_list = None
-	else:
+		
+		#execute the actual search
 		results_list = search_settings.execute_search()
 		
 		rendered_results_list = [
@@ -28,11 +28,14 @@ def search_box(request, search_settings):
 		
 		#no results
 		if len(rendered_results_list) == 0:
-			rendered_results_list = ['<font color="red">No Results</font>']
+			if search_settings.no_match_template != None:
+				template = search_settings.no_match_template
+				rendered_results_list = [render_to_string(template, {})]
+			else:
+				rendered_results_list = ['<font color="red">No Results</font>']
+	
 	
 	context = {
-		'search_fields': search_settings.field_display_names,
-		'submit_url': request.path,
 		'rendered_results_list': rendered_results_list,
 	}
 	

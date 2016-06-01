@@ -1,16 +1,4 @@
 
-Please fill in at least one of the search fields below.
-<form method="post" action="{{submit_url}}">
-	{% csrf_token %}
-	
-	{% for field, name in search_fields.items %}
-		{{ name }} :
-		<input type="text" name="{{ field }}" />
-	{% endfor %}
-	
-	<br />
-	<input type="submit" value="Search">
-</form>
 
 
 {% if rendered_results_list %}
