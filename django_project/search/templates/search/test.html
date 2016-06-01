@@ -4,7 +4,34 @@
 
 <div class="basic">
 	<h2>~Search Box~</h2>
-	{% load search_box %}
-	{% search_box request search_settings %}
+	
+	Please fill in at least one of the search fields below.
+	<form method="post" action="{{submit_url}}">
+		{% csrf_token %}
+	
+		{% for field, name in search_fields.items %}
+			{{ name }} :
+			<input type="text" name="{{ field }}" />
+		{% endfor %}
+	
+		<br />
+		<input type="submit" value="Search">
+	</form>
+	
 </div>
+
+
+
+{% load search_box %}
+
+<div class="basic">
+	{% search_box request search_settings_1 %}
+</div>
+
+
+<div class="basic">
+	{% search_box request search_settings_2 %}
+</div>
+
+
 

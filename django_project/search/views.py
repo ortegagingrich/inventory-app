@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 
-from .models import DictionaryEntry
+from .models import DictionaryEntry, DuplicateEntry
 from .search import SearchSettings
 
 
@@ -13,21 +13,39 @@ def test_view(request):
 		raise Http404
 	
 	
-	search_fields = ['word',]
-	display_names = {'word': 'Word'}
+	search_fields = {
+		'word': 'word_element',
+	}
 	
-	search_settings = SearchSettings(
+	search_settings_1 = SearchSettings(
 		search_model=DictionaryEntry,
-		field_names=search_fields,
-		field_display_names=display_names,
-		result_template='search/test_result.html',
+		field_sources=search_fields,
+		result_template='search/test_result_1.html',
 		object_label='entry',
 	)
 	
 	
+	search_fields = {
+		'wordkey': 'word_element',
+	}
+	
+	search_settings_2 = SearchSettings(
+		search_model=DuplicateEntry,
+		field_sources=search_fields,
+		result_template='search/test_result_2.html',
+		object_label='entry'
+	)
+	
+	
+	
+	display_names = {'word_element': 'Word'}
+	
 	template = 'search/test.html'
 	context = {
-		'search_settings': search_settings,
+		'search_settings_1': search_settings_1,
+		'search_settings_2': search_settings_2,
+		'submit_url': request.path,
+		'search_fields': display_names,
 	}
 	
 	return render(request, template, context)
