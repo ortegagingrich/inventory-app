@@ -54,7 +54,7 @@ def search_page(request):
 		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
 	
 	search_fields = ['name',]
-	display_names = {'name': 'Product Name or Description',}
+	search_fields = {'name': 'name_input_field'}
 	
 	static_search_fields = {
 		'user': request.user,
@@ -63,15 +63,20 @@ def search_page(request):
 	search_settings = SearchSettings(
 		static_fields=static_search_fields,
 		search_model=ItemType,
-		field_names=search_fields,
-		field_display_names=display_names,
+		field_sources=search_fields,
 		result_template='inventory/type/summary.html',
 		object_label='type',
 	)
 	
+	
+	display_names = {'name_input_field': 'Product Name or Description',}
+	
+	
 	template = 'inventory/type/search.html'
 	context = {
 		'search_settings': search_settings,
+		'search_fields': display_names,
+		'submit_url': request.path
 	}
 	
 	return render(request, template, context)
