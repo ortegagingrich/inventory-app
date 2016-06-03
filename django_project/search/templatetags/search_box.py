@@ -6,7 +6,22 @@ register = template.Library()
 
 @register.inclusion_tag('search/search_box.html')
 def search_box(request, search_settings):
-	#TODO: Add Docstring
+	"""
+	This is a custom template tag created to allow the easy insertion of (very)
+	basic database searching user-interfaces in my django apps.
+	
+	Note that this tag only inserts a results box.  The user must either make
+	their own search query form or use the template tag {% search_query %} to
+	make one.
+	
+	The {% search_box %} template tag must be given the current request as well
+	as at least one SearchSettings object, which specifies the parameters of
+	the search as well as the display settings of the results.
+	
+	Please see 'search.views.test_view' and its corresponding template
+	'../search/templates/search/test.html' for an example of the proper usage
+	of this template tag.
+	"""
 	
 	# If no request has been made, (i.e. the page is loaded for the first tiem)
 	# show no results
