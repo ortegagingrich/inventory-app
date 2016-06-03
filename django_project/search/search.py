@@ -16,6 +16,8 @@ class SearchSettings(object):
 		max_display_items = 50,
 		static_fields=None,
 		result_template=None,
+		result_header=None,
+		result_header_template=None,
 		no_match_template=None,
 		object_label='object',
 		context=None,
@@ -26,7 +28,11 @@ class SearchSettings(object):
 		self.search_model = search_model
 		
 		self.result_template = result_template
+		self.result_header = result_header
+		self.result_header_template = result_header_template
 		self.no_match_template = no_match_template
+		
+		
 		self.object_label = object_label
 		self.context = context
 		

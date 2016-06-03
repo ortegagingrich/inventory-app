@@ -33,6 +33,14 @@ def search_box(request, search_settings):
 				rendered_results_list = [render_to_string(template, {})]
 			else:
 				rendered_results_list = ['<font color="red">No Results</font>']
+		
+		# insert header text or templates
+		if search_settings.result_header_template != None:
+			template = search_settings.result_header_template
+			rendered_results_list.insert(0, render_to_string(template, {}))
+		elif search_settings.result_header != None:
+			header_text = '<h2>{}</h2>'.format(search_settings.result_header)
+			rendered_results_list.insert(0, header_text)
 	
 	
 	context = {
