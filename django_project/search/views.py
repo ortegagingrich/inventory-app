@@ -21,6 +21,7 @@ def test_view(request):
 		search_model=DictionaryEntry,
 		field_sources=search_fields,
 		result_template='search/test_result_1.html',
+		result_header='According to Professor Webster:',
 		object_label='entry',
 	)
 	
@@ -32,6 +33,7 @@ def test_view(request):
 	search_settings_2 = SearchSettings(
 		search_model=DuplicateEntry,
 		field_sources=search_fields,
+		result_header='Ancient Wisdom:',
 		result_template='search/test_result_2.html',
 		object_label='entry'
 	)
