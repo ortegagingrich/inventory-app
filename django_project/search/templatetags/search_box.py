@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 register = template.Library()
 
 @register.inclusion_tag('search/search_box.html')
-def search_box(request, search_settings):
+def search_box(request, *search_settings_objects):
 	"""
 	This is a custom template tag created to allow the easy insertion of (very)
 	basic database searching user-interfaces in my django apps.
@@ -27,35 +27,13 @@ def search_box(request, search_settings):
 	# show no results
 	if len(request.POST) == 0:
 		rendered_results_list = None
-	else: # A query is being made, so parse the input fields
-		# fill in search fields
-		for field_name, source in search_settings.field_sources.iteritems():
-			val = request.POST[source]
-			if len(val) > 0:
-				search_settings.fields[field_name] = val
+	else: # A query is being made
+		rendered_results_list = []
 		
-		#execute the actual search
-		results_list = search_settings.execute_search()
-		
-		rendered_results_list = [
-			_render_result(result, search_settings) for result in results_list
-		]
-		
-		#no results
-		if len(rendered_results_list) == 0:
-			if search_settings.no_match_template != None:
-				template = search_settings.no_match_template
-				rendered_results_list = [render_to_string(template, {})]
-			else:
-				rendered_results_list = ['<font color="red">No Results</font>']
-		
-		# insert header text or templates
-		if search_settings.result_header_template != None:
-			template = search_settings.result_header_template
-			rendered_results_list.insert(0, render_to_string(template, {}))
-		elif search_settings.result_header != None:
-			header_text = '<h2>{}</h2>'.format(search_settings.result_header)
-			rendered_results_list.insert(0, header_text)
+		#Conduct search and render each settings object
+		for search_settings in search_settings_objects:
+			results = _process_settings_object(request, search_settings)
+			rendered_results_list += results
 	
 	
 	context = {
@@ -63,6 +41,45 @@ def search_box(request, search_settings):
 	}
 	
 	return context
+
+
+def _process_settings_object(request, search_settings):
+	"""
+	Parses inputs from the request, conducts the search and returns a list of
+	rendered results specific to the provided SearchSettings object
+	"""
+	# First, parse the search fields.
+	for field_name, source in search_settings.field_sources.iteritems():
+		val = request.POST[source]
+		if len(val) > 0:
+			search_settings.fields[field_name] = val
+	
+	# Do the actual search.
+	search_results = search_settings.execute_search()
+	
+	# Now, produce the rendered results list
+	rendered_results_list = [
+		_render_result(result, search_settings) for result in search_results
+	]
+	
+	# If, after everything, there are no results, either render the provided
+	# template or provide a generic "No Results" message.
+	if len(rendered_results_list) == 0:
+		if search_settings.no_match_template != None:
+			template = search_settings.no_match_template
+			rendered_results_list = [render_to_string(template, {})]
+		else:
+			rendered_results_list = ['<font color="red">No Results</font>']
+	
+	# Header text or template
+	if search_settings.result_header_template != None:
+		template = search_settings.result_header_template
+		rendered_results_list.insert(0, render_to_string(template, {}))
+	elif search_settings.result_header != None:
+		header_text = '<h2>{}</h2>'.format(search_settings.result_header)
+		rendered_results_list.insert(0, header_text)
+	
+	return rendered_results_list
 
 
 def _render_result(result_object, search_settings):
