@@ -37,8 +37,8 @@ class SearchSettings(object):
 		self.context = context
 		
 		# a dictionary whose keys are the attribute names of the models to be
-		# searched and whose values will be replaced with the parsed values from
-		# the input fields
+		# searched and whose values will be replaced with a list of the parsed
+		# values from the input fields (split, of course, by whitespace)
 		self.fields = {}
 		for field in field_sources.keys():
 			self.fields[field] = None
@@ -57,34 +57,73 @@ class SearchSettings(object):
 			self.static_fields = {}
 		
 		self.max_display_items = max_display_items
-
 	
+		
 	def execute_search(self):
 		"""
 		Attempts to execute a search with the provided settings.  Returns a
 		Django queryset containing all matches.
 		"""
 		
-		search_args = {}
-		for field_name, field_value in self.fields.iteritems():
-			if field_value != None:
-				argument_name = '{}__icontains'.format(field_name)
-				search_args[argument_name] = field_value
+		#determine how many times the filter operator will have to be applied
+		filter_iterations = self._count_filter_iterations()
+		
+		#create and fill in a list of dictionaries of the appropriate length
+		search_args_list = [{} for i in range(0, filter_iterations)]
+		for field_name, field_values in self.fields.iteritems():
+			#skip fields which were left blank
+			if field_values == None:
+				continue
+			
+			argument_name = '{}__icontains'.format(field_name)
+			
+			entry_count = 0
+			while entry_count < len(field_values):
+				search_args = search_args_list[entry_count]
+				search_args[argument_name] = field_values[entry_count]
+				
+				entry_count += 1
+		
+		
+		static_search_args = {}
 		for field_name, field_value in self.static_fields.iteritems():
 			if field_value != None:
-				search_args[field_name] = field_value
+				static_search_args[field_name] = field_value
 		
 		
 		# only do the search if there is at least one non-empty input
-		if len(search_args) > 0:
-			results = self.search_model.objects.filter(**search_args)
-		else:
+		if len(search_args_list) == 0:
 			results = self.search_model.objects.none()
+		elif max(map(len, search_args_list)) == 0:
+			results = self.search_model.objects.none()
+		else:
+			# Carry out the actual search
+			# First, by filtering according to the static items
+			results = self.search_model.objects.filter(**static_search_args)
+			
+			# Now, progressively apply filters from the entry fields
+			for search_args in search_args_list:
+				results = results.filter(**search_args)
 		
 		
 		if len(results) > self.max_display_items:
 			results = results[0:self.max_display_items - 1]
 		
 		return results
+	
+	
+	
+	def _count_filter_iterations(self):
+		"""
+		Determines how many times the filter operation will have to be applied
+		in the sorting process.  Essentially, this is the length of the longest
+		field value list.
+		"""
+		values = [val for val in self.fields.values() if val != None]
+		if len(values) != 0:
+			return max(map(len, values))
+		else:
+			return 0
+
 
 

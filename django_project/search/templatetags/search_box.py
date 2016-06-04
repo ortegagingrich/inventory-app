@@ -50,9 +50,9 @@ def _process_settings_object(request, search_settings):
 	"""
 	# First, parse the search fields.
 	for field_name, source in search_settings.field_sources.iteritems():
-		val = request.POST[source]
-		if len(val) > 0:
-			search_settings.fields[field_name] = val
+		search_words = request.POST[source].split()
+		if len(search_words) > 0:
+			search_settings.fields[field_name] = search_words
 	
 	# Do the actual search.
 	search_results = search_settings.execute_search()
