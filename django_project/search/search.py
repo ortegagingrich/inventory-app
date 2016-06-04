@@ -65,6 +65,23 @@ class SearchSettings(object):
 		Django queryset containing all matches.
 		"""
 		
+		# Since searching multiple words under the same field is allowed and
+		# each application of the django filter function to a queryset only
+		# allows one input per field (i.e. we can only search to see if a 
+		# column contains a single word at a time), we will have to apply the
+		# filter function iteratively.  The example below illustrates the scheme:
+		# 
+		# Suppose that we are conducting a search for objects whose field_1 string
+		# contains both 'foo' and 'bar' and whose field_2 string contains 'baz'.
+		# 
+		# We must apply the filter function twice to search field_1 for two
+		# substrings.  Thus, we build a list of kwargs dictionaries as follows:
+		# 
+		# [{'field_1': 'foo', 'field_2': 'baz'}, {'field_1': 'bar'}]
+		# 
+		# See the code below for the details.  This explanation is just to
+		# try to illuminate why the code is this way.
+		
 		#determine how many times the filter operator will have to be applied
 		filter_iterations = self._count_filter_iterations()
 		
@@ -112,7 +129,6 @@ class SearchSettings(object):
 		return results
 	
 	
-	
 	def _count_filter_iterations(self):
 		"""
 		Determines how many times the filter operation will have to be applied
@@ -124,6 +140,5 @@ class SearchSettings(object):
 			return max(map(len, values))
 		else:
 			return 0
-
 
 
