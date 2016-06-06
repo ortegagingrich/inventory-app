@@ -12,8 +12,10 @@ urlpatterns=[
 	url(r'^$', vt.index_page, name='index'),
 	#/inventory/type/upc/
 	url(r'^upc/$', vt.upc_page, name='upc_page'),
-	#/inventory/type/upc/001516153851/ TODO: switch to get methods w/ url
+	#/inventory/type/upc/lookup/ TODO: switch to get methods w/ url
 	url(r'^upc/lookup/$', vt.upc_lookup, name='upc_lookup'),
+	#/inventory/type/upc/001516153851/
+	url(r'^upc/(?P<upc>[0-9]+)/$', vt.upc_code, name='upc_code'),
 	#/inventory/type/search/
 	url(r'^search/$', vt.search_page, name='search_page'),
 	#/inventory/type/search/owned/

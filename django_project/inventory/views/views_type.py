@@ -167,6 +167,42 @@ def upc_page(request, error_messages=None, default_value=None):
 	return render(request, template, context)
 
 
+def upc_code(request, upc):
+	"""
+	General view which decides the appropriate action to take upon receiving a
+	UPC.  If the UPC is invalid, a HTTP404 is raised
+	"""
+	open_grocery_entry = get_object_or_404(OpenGroceryDatabaseEntry, product_upc=upc)
+	
+	#check to see if there is already an ItemType for this user and UPC code
+	try:
+		item_type = ItemType.objects.get(
+			user=request.user,
+			open_grocery_entry=open_grocery_entry
+		)
+	except ItemType.DoesNotExist:
+		item_type = None
+	
+	
+	if item_type != None:
+		if item_type.initialized:
+			redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
+			return HttpResponseRedirect(redirect_url)
+	else:
+		#create user-specific item
+		item_type = create_type(
+			user=request.user,
+			name=open_grocery_entry.product_name,
+			needed_temperature=0,
+			openable=False,
+			initialized=False,
+			upc=upc
+		)
+	
+	redirect_url = reverse('inventory:type:modify_page', args=(item_type.id,))
+	return HttpResponseRedirect(redirect_url)
+
+
 
 def upc_lookup(request):
 	error_messages = []
@@ -186,41 +222,7 @@ def upc_lookup(request):
 		return upc_page(request, error_messages, upc_code)
 	
 	
-	#check to see if there is already an ItemType for this user and UPC code
-	try:
-		item_type = ItemType.objects.get(
-			user=request.user,
-			open_grocery_entry=open_grocery_entry
-		)
-	except ItemType.DoesNotExist:
-		item_type = None
-	
-	
-	if item_type != None:
-		if item_type.initialized:
-			redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
-			return HttpResponseRedirect(redirect_url)
-	else:
-		#create user-specific item
-		try:
-			item_type = create_type(
-				user=request.user,
-				name=open_grocery_entry.product_name,
-				needed_temperature=0,
-				openable=False,
-				initialized=False,
-				upc=upc
-			)
-		except inventory.exceptions.InvalidUPCError:
-			message = 'No Product with UPC code "{}".'.format(upc)
-			error_messages.append(message)
-	
-	
-	if len(error_messages) > 0:
-		return upc_page(request, error_messages, upc_code)
-	
-	
-	redirect_url = reverse('inventory:type:modify_page', args=(item_type.id,))
+	redirect_url = reverse('inventory:type:upc_code', args=(upc,))
 	return HttpResponseRedirect(redirect_url)
 
 
