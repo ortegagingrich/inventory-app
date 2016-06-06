@@ -2,23 +2,11 @@
 	Test View:
 </h1>
 
-<div class="basic">
-	<h2>~Search Box~</h2>
-	
-	Please fill in at least one of the search fields below.
-	<form method="post" action="{{submit_url}}">
-		{% csrf_token %}
-	
-		{% for field, name in search_fields.items %}
-			{{ name }} :
-			<input type="text" name="{{ field }}" />
-		{% endfor %}
-	
-		<br />
-		<input type="submit" value="Search">
-	</form>
-	
-</div>
+<h2>~Search Box~</h2>
+
+{% load search_form %}
+
+{% search_form request search_fields %}
 
 
 

@@ -1,0 +1,21 @@
+<div class="basic">
+	
+	{% if instructions %}
+		{{ instructions }}
+	{% else %}
+		Please fill in at least one of the search fields below.
+	{% endif %}
+	
+	<form method="post" action="{{submit_url}}">
+		{% csrf_token %}
+	
+		{% for field, name in search_fields.items %}
+			{{ name }} :
+			<input type="text" name="{{ field }}" />
+		{% endfor %}
+	
+		<br />
+		<input type="submit" value="Search">
+	</form>
+	
+</div>
