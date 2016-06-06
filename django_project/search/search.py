@@ -116,8 +116,7 @@ class SearchSettings(object):
 		
 		static_search_args = {}
 		for field_name, field_value in self.static_fields.iteritems():
-			if field_value != None:
-				static_search_args[field_name] = field_value
+			static_search_args[field_name] = field_value
 		
 		
 		# only do the search if there is at least one non-empty input
