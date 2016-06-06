@@ -48,38 +48,74 @@ def index_page(request):
 
 def search_page(request):
 	"""
-	A page with a search box for searching item types.
+	A page with a search box for searching all item types.
 	"""
 	if not request.user.is_authenticated():
 		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
 	
-	search_fields = ['name',]
-	search_fields = {'name': 'name_input_field'}
 	
+	# Search Settings for Custom Items
+	
+	search_fields = {'name': 'name_input_field'}
 	static_search_fields = {
 		'user': request.user,
+		'open_grocery_entry': None,
 	}
 	
-	search_settings = SearchSettings(
-		static_fields=static_search_fields,
+	search_settings_custom = SearchSettings(
 		search_model=ItemType,
 		field_sources=search_fields,
+		static_fields=static_search_fields,
+		sort_by_length_fields=search_fields.keys(),
+		result_header='Custom Item Types',
 		result_template='inventory/type/summary.html',
 		object_label='type',
 	)
 	
 	
-	display_names = {'name_input_field': 'Product Name or Description',}
+	# Search Settings for Default Items
 	
+	search_fields = {'name': 'name_input_field'}
+	static_search_fields = {
+		'user': None,
+	}
+	
+	search_settings_default = SearchSettings(
+		search_model=ItemType,
+		field_sources=search_fields,
+		static_fields=static_search_fields,
+		sort_by_length_fields=search_fields.keys(),
+		result_header='Default Item Types',
+		result_template='inventory/type/summary.html',
+		object_label='type',
+	)
+	
+	
+	# Build the context
+	
+	display_names = {'name_input_field': 'Product Name or Description',}
 	
 	template = 'inventory/type/search.html'
 	context = {
-		'search_settings': search_settings,
+		'search_settings_custom': search_settings_custom,
+		'search_settings_default': search_settings_default,
 		'search_fields': display_names,
 		'submit_url': request.path
 	}
 	
 	return render(request, template, context)
+
+
+def search_owned_page(request):
+	"""
+	A page for searching only items which are owned.
+	"""
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	
+	
+	#TODO: temporary
+	raise Http404
 
 
 

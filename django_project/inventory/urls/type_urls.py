@@ -16,6 +16,8 @@ urlpatterns=[
 	url(r'^upc/lookup/$', vt.upc_lookup, name='upc_lookup'),
 	#/inventory/type/search/
 	url(r'^search/$', vt.search_page, name='search_page'),
+	#/inventory/type/search/owned/
+	url(r'^search/owned/$', vt.search_owned_page, name='search_owned'),
 	#/inventory/type/new/
 	url(r'^new/$', vt.create_page, name='create_page'),
 	#/inventory/type/new/submit/

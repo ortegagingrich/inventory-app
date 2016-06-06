@@ -1,2 +1,5 @@
 <a href="{% url 'inventory:type:detail' type.id %}">{{type.name}}</a>
-			({{type.item_count}} item{{ type.item_count|pluralize }})
+
+{% if type.item_count %}	
+	({{type.item_count}} item{{ type.item_count|pluralize }})
+{% endif %}
