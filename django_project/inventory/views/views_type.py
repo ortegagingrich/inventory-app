@@ -90,6 +90,29 @@ def search_page(request):
 		object_label='type',
 	)
 	
+	#Search Settings for Branded Items
+	
+	search_fields = {'product_name': 'name_input_field',}
+	
+	search_settings_branded_name = SearchSettings(
+		search_model=OpenGroceryDatabaseEntry,
+		field_sources=search_fields,
+		result_header='Branded Item Types',
+		result_template='inventory/type/upc_summary.html',
+		object_label='entry',
+		max_display_items=50,
+	)
+	
+	search_fields = {'product_brand': 'name_input_field',}
+	
+	search_settings_branded_brand = SearchSettings(
+		search_model=OpenGroceryDatabaseEntry,
+		field_sources=search_fields,
+		result_template='inventory/type/upc_summary.html',
+		object_label='entry',
+		max_display_items=50,
+	)
+	
 	
 	# Build the context
 	
@@ -97,8 +120,10 @@ def search_page(request):
 	
 	template = 'inventory/type/search.html'
 	context = {
-		'search_settings_custom': search_settings_custom,
-		'search_settings_default': search_settings_default,
+		'search_custom': search_settings_custom,
+		'search_default': search_settings_default,
+		'search_branded_1': search_settings_branded_name,
+		'search_branded_2': search_settings_branded_brand,
 		'search_fields': display_names,
 		'submit_url': request.path
 	}
