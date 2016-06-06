@@ -15,7 +15,8 @@ class SearchSettings(object):
 	
 	def __init__(
 		self, search_model, field_sources,
-		max_display_items = 50,
+		sort_by_length_fields=None, # A list of field_names to sort by length
+		max_display_items=50,
 		static_fields=None,
 		result_template=None,
 		result_header=None,
@@ -44,6 +45,15 @@ class SearchSettings(object):
 		self.fields = {}
 		for field in field_sources.keys():
 			self.fields[field] = None
+		
+		if sort_by_length_fields != None:
+			# check to make sure these are valid fields
+			for name in sort_by_length_fields:
+				if not name in self.fields.keys():
+					raise InvalidSearchSettings
+			self.sort_by_length_fields = sort_by_length_fields
+		else:
+			self.sort_by_length_fields = self.fields.keys()
 		
 		# a dictionary whose keys are the attribute names of the models to be
 		# searched and whose values are the names of the html input element to
@@ -125,14 +135,7 @@ class SearchSettings(object):
 				results = results.filter(**search_args)
 		
 		
-		# If only one field was searched, sort by the length of that field
-		field_count = 0
-		for key, value in self.fields.iteritems():
-			if value != None:
-				field_count += 1
-				field_name = key
-		
-		if field_count == 1:
+		for field_name in self.sort_by_length_fields:
 			try:
 				mod_results = results.annotate(text_len=Length(field_name))
 				mod_results = mod_results.order_by('text_len')

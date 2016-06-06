@@ -33,6 +33,7 @@ def test_view(request):
 	search_settings_2 = SearchSettings(
 		search_model=DuplicateEntry,
 		field_sources=search_fields,
+		sort_by_length_fields=['wordkey',],
 		result_header='Ancient Wisdom:',
 		result_template='search/test_result_2.html',
 		object_label='entry'
