@@ -2,6 +2,8 @@
 Functions and Classes related to the searching.  For now, the searching itself
 is done through the Django ORM and is done at the database level only.
 """
+from django.db.models.functions import Length
+
 from .exceptions import InvalidSearchSettings
 
 
@@ -121,6 +123,22 @@ class SearchSettings(object):
 			# Now, progressively apply filters from the entry fields
 			for search_args in search_args_list:
 				results = results.filter(**search_args)
+		
+		
+		# If only one field was searched, sort by the length of that field
+		field_count = 0
+		for key, value in self.fields.iteritems():
+			if value != None:
+				field_count += 1
+				field_name = key
+		
+		if field_count == 1:
+			try:
+				mod_results = results.annotate(text_len=Length(field_name))
+				mod_results = mod_results.order_by('text_len')
+				results = mod_results
+			except Exception as ex:
+				pass
 		
 		
 		if len(results) > self.max_display_items:
