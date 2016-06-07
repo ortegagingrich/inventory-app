@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse
@@ -222,21 +223,18 @@ def item_open_submit(request, item_id):
 	
 	
 	if len(error_messages) > 0:
-		return views.item_open_page(request, item_id, error_messages)
+		return item_open_page(request, item_id, error_messages)
 	
 	
 	try:
-		open_item(request.user, item, open_date)
+		open_item(request.user, item.id, open_date)
 	except inventory.exceptions.InvalidValueError as error:
 		message = error.value
-		error_messages.append(message)
-	except:
-		message = 'Unable to open item.'
 		error_messages.append(message)
 	
 	
 	if len(error_messages) > 0:
-		return views.item_open_page(request, item_id, error_messages)
+		return item_open_page(request, item_id, error_messages)
 	
 	
 	return HttpResponseRedirect(reverse("inventory:item_detail", args=(item_id,)))
