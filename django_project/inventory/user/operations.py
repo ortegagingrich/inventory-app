@@ -30,11 +30,8 @@ def create_user(username, email, fname=None, lname=None):
 	
 	
 	#build the account object
-	try:
-		user = User.objects.create_user(username, email, 'thou art a knave')
-		defaults.create_user_defaults(user)
-	except:
-		raise inventory.exceptions.UserCreateError
+	user = User.objects.create_user(username, email, 'thou art a knave')
+	defaults.create_user_defaults(user)
 	
 	#this will fail if the provided email is invalid
 	try:

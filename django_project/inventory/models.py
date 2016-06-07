@@ -369,7 +369,7 @@ class UserProfile(models.Model):
 			#get rid of any unread password reset notifications
 			notifications = NotificationModel.objects.filter(
 				user=user,
-				id_string=reset_password
+				id_string='reset_password'
 			)
 			for notification in notifications:
 				if notification.unread:

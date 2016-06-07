@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.dispatch import receiver
 
-from inventory.models import Item
+from inventory.models import Item, UserProfile
 
 
 @receiver(user_logged_in)

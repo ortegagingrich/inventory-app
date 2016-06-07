@@ -204,9 +204,6 @@ def signup_submit(request):
 	except inventory.exceptions.UserCreateError:
 		message = 'Could not create user.'
 		return fail([message])
-	except:
-		message = 'Failed to create new account.'
-		return fail([message])
 	
 	#Display Success Page
 	template = 'inventory/signup_success.html'
