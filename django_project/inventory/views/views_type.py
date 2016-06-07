@@ -329,11 +329,10 @@ def modify_submit(request, type_key):
 	if not request.user.is_authenticated():
 		raise Http404
 	
-	(input_data, error_messages) = _parse_type_form(request)
+	(input_data, error_messages) = _parse_type_form(request, omit_blank=True)
 	
 	if len(error_messages) > 0:
 		return modify_page(request, type_key, error_messages)
-	
 	
 	try:
 		update_type(request.user, type_key, **input_data)
@@ -353,14 +352,15 @@ def modify_submit(request, type_key):
 	return HttpResponseRedirect(redirect_url)
 
 
-def _parse_type_form(request):
+def _parse_type_form(request, omit_blank=False):
 	"""
 	Attempts to parse a form for the creation/modification of an item type.
 	Returns a tuple whose first component is a dictionary which can be used
 	as a keyword argument to type.operations.modify or type.operations.create.
 	The second component is an array of error messages.
 	
-	Note that no validity-checking of inputs is done at this level.
+	Note that no validity-checking of inputs is done at this level.  Blank inputs,
+	however, are omitted, provided that the option is selected.
 	"""
 	input_data = {}
 	error_messages = []
@@ -432,6 +432,13 @@ def _parse_type_form(request):
 	except:
 		message = 'Please indicate if the item lasts longer when frozen'
 		error_messages.append(message)
+	
+	
+	# if needed, remove any blank entries
+	if omit_blank:
+		for key in input_data.keys():
+			if input_data[key] == None or input_data[key] == u'':
+				input_data.pop(key)
 	
 	
 	return (input_data, error_messages)
