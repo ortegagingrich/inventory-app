@@ -18,7 +18,7 @@
 	</li>
 	{% if not item.opened and item.user == user and item.item_type.openable %}
 	<li>
-		<a href="{% url 'inventory:item_open_submit' item.id %}">Open</a>
+		<a href="{% url 'inventory:item_open_page' item.id %}">Open</a>
 	</li>
 	{% endif %}
 	{% if item.user == user %}
