@@ -1,5 +1,5 @@
 li a {
-	color: green;
+	color: blue;
 }
 
 li a:visited {
@@ -8,5 +8,5 @@ li a:visited {
 
 
 body {
-	background: #333333;
+	background: #EEEEEE;
 }
