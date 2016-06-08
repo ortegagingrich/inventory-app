@@ -1,3 +1,5 @@
+(UPC: {{ entry.product_upc }})
+
 <font color="orange">{{ entry.product_brand }}</font> :
 <a href="{% url 'inventory:type:upc_code' entry.product_upc %}">
 	{{ entry.product_name }}

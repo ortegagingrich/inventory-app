@@ -100,7 +100,7 @@ def search_page(request):
 		result_header='Branded Item Types',
 		result_template='inventory/type/upc_summary.html',
 		object_label='entry',
-		max_display_items=50,
+		max_display_items=150,
 	)
 	
 	
