@@ -62,6 +62,9 @@ def search_page(request):
 		'open_grocery_entry': None,
 	}
 	
+	nmurl = reverse('inventory:type:create_page')
+	no_match_link = '<a href="{}">Add a new custom item type</a>'.format(nmurl)
+	
 	search_settings_custom = SearchSettings(
 		search_model=ItemType,
 		field_sources=search_fields,
@@ -69,6 +72,7 @@ def search_page(request):
 		sort_by_length_fields=search_fields.keys(),
 		result_header='Custom Item Types',
 		result_template='inventory/type/summary.html',
+		no_match_message=no_match_link,
 		object_label='type',
 	)
 	
