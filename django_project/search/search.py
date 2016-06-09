@@ -14,7 +14,8 @@ class SearchSettings(object):
 	"""
 	
 	def __init__(
-		self, search_model, field_sources,
+		self, search_model,
+		field_sources=None,
 		sort_by_length_fields=None, # A list of field_names to sort by length
 		max_display_items=50,
 		static_fields=None,
@@ -25,8 +26,8 @@ class SearchSettings(object):
 		object_label='object',
 		context=None,
 	):
-		if len(field_sources) == 0:
-			raise InvalidSearchSettings
+		if field_sources == None:
+			field_sources = {}
 		
 		self.search_model = search_model
 		
@@ -113,7 +114,6 @@ class SearchSettings(object):
 				
 				entry_count += 1
 		
-		
 		static_search_args = {}
 		for field_name, field_value in self.static_fields.iteritems():
 			static_search_args[field_name] = field_value
@@ -144,7 +144,7 @@ class SearchSettings(object):
 		
 		
 		if len(results) > self.max_display_items:
-			results = results[0:self.max_display_items - 1]
+			results = results[0:self.max_display_items]
 		
 		return results
 	
