@@ -15,6 +15,7 @@ def search_form(request, search_fields, instructions=None):
 	context = {
 		'search_fields': search_fields,
 		'submit_url': request.path,
+		'cancel_url': request.META.get('HTTP_REFERER'),
 		'instructions': instructions,
 	}
 	
