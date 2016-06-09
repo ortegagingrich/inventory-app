@@ -95,8 +95,8 @@
 			<input type = "date" name="open_date"/> <br />
 	</ul>
 	<input type="submit" />
-	<input type="button" value="Cancel"
-	       onclick="location.href='{% url 'inventory:item_detail' item.id %}'"/>
+	{% load cancel_button %}
+	{% cancel_button request 'inventory:item_detail' item.id %}
 </form>
 
 

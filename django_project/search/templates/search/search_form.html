@@ -16,6 +16,9 @@
 	
 		<br />
 		<input type="submit" value="Search">
+		{% if cancel_url %}
+			{% include "utils/cancel_button.html" %}
+		{% endif %}
 	</form>
 	
 </div>

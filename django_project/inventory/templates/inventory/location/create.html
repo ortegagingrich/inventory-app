@@ -19,6 +19,6 @@
 	{% include "inventory/location/create_form.html" %}
 	
 	<input type="submit" name="submit"/>
-	<input type="button" name="cancel" value="Cancel"
-	       onclick="location.href='{% url 'inventory:location:index' %}'" />
+	{% load cancel_button %}
+	{% cancel_button request 'inventory:location:index' %}
 </form>
