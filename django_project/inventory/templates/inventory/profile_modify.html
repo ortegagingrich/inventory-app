@@ -17,6 +17,6 @@
 	
 	<br> <input type="submit" name="submit">
 	
-	<input type="button" value="Cancel"
-	       onclick="location.href='{% url 'inventory:profile' %}'" />
+	{% load cancel_button %}
+	{% cancel_button request 'inventory:profile' %}
 </form>
