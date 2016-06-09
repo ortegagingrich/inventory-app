@@ -55,7 +55,7 @@ class InvalidValueError(Exception):
 class InvalidDateError(InvalidValueError):
 	value_descriptor = "date"
 
-class InvalidEmailError(Exception):
+class InvalidEmailError(InvalidValueError):
 	value_descriptor = "email"
 
 class InvalidPasswordError(InvalidValueError):
