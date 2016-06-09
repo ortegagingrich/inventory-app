@@ -1,4 +1,5 @@
 from django import template
+from django.core.urlresolvers import reverse
 
 
 register = template.Library()
@@ -10,7 +11,18 @@ def cancel_button(request, default_url_name, *args, **kwargs):
 	user to the previous page when submitted.  If not, the user is redirected
 	to the url with the provided name and arguments.
 	"""
-	context = {}
+	
+	cancel_url = request.META.get('HTTP_REFERER')
+	if cancel_url == None:
+		cancel_url = reverse(default_url_name, args=args, kwargs=kwargs)
+		referer = 'None'
+	else:
+		referer = cancel_url
+	
+	context = {
+		'referer': referer,
+		'cancel_url': cancel_url,
+	}
 	
 	return context
 
