@@ -28,21 +28,24 @@ def create_user(username, email, fname=None, lname=None):
 	except ValidationError:
 		raise inventory.exceptions.InvalidEmailError(email)
 	
-	
-	#build the account object
-	user = User.objects.create_user(username, email, 'thou art a knave')
-	defaults.create_user_defaults(user)
-	
-	#this will fail if the provided email is invalid
 	try:
+		#build the account object
+		user = User.objects.create_user(username, email, 'thou art a knave')
+		defaults.create_user_defaults(user)
+	
+		#this will fail if the provided email is invalid
 		temporary_password = reset_password(user)
+	except inventory.exceptions.InvalidEmailError as exception:
+		#Did not work out, assign a generic password
+		change_password(user, 'password')
+		return (user, False, 'password')
 	except Exception as exception:
-		#Did not work out, delete the user
+		#Did not work out for some other reason; delete the user and continue
 		user.delete()
 		raise exception
 	
 	
-	return user
+	return (user, True, None)
 
 
 def update_user(user, email=None, fname=None, lname=None):

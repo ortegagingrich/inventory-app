@@ -192,7 +192,7 @@ def signup_submit(request):
 	
 	#Attempt to create the account
 	try:
-		user = create_user(
+		user, success, temp = create_user(
 			username=username,
 			email=email,
 			fname='[FIRST NAME]',
@@ -206,10 +206,18 @@ def signup_submit(request):
 		return fail([message])
 	
 	#Display Success Page
-	template = 'inventory/signup_success.html'
-	context = {
-		'username': user.username,
-		'email': user.email,
-	}
-	return render(request, template, context)
+	if success:
+		template = 'inventory/signup_success.html'
+		context = {
+			'username': user.username,
+			'email': user.email,
+		}
+		return render(request, template, context)
+	else: # Almost successful, but email did not work
+		template = 'inventory/signup_no_email.html'
+		context = {
+			'username': user.username,
+			'temporary_password': temp,
+		}
+
 
