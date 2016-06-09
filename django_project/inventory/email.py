@@ -47,10 +47,8 @@ def send_temporary_password(user, temporary_password):
 	mail = EmailMessage(subject, message, FROM_EMAIL, [email])
 	mail.content_subtype = 'html'
 	
-	mail.send()
 	try:
-		#mail.send()
-		pass
+		mail.send()
 	except Exception as ex:
 		raise inventory.exceptions.InvalidEmailError(user.email)
 	
