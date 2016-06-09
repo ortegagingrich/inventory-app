@@ -76,8 +76,8 @@ def build_fixtures_upc():
 				continue
 			
 			grp_id = columns[index_grp_id]
-			brand = columns[index_brand]
-			name = columns[index_name]
+			brand = columns[index_brand][:50]
+			name = columns[index_name][:100]
 			upc = columns[index_upc]
 			
 			if '\'' in name or '\"' in name:
