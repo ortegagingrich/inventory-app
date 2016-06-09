@@ -9,7 +9,7 @@ from django_project import settings
 import inventory.exceptions
 
 
-DOMAIN = '127.0.0.1'
+DOMAIN = settings.DOMAIN
 FROM_EMAIL = 'ortegagingrich@gmail.com'
 
 def send_temporary_password(user, temporary_password):
