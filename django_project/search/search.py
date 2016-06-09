@@ -22,6 +22,7 @@ class SearchSettings(object):
 		result_template=None,
 		result_header=None,
 		result_header_template=None,
+		no_match_message=None,
 		no_match_template=None,
 		object_label='object',
 		context=None,
@@ -34,6 +35,7 @@ class SearchSettings(object):
 		self.result_template = result_template
 		self.result_header = result_header
 		self.result_header_template = result_header_template
+		self.no_match_message = no_match_message
 		self.no_match_template = no_match_template
 		
 		

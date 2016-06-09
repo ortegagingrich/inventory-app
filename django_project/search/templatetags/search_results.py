@@ -68,6 +68,8 @@ def _process_settings_object(request, search_settings):
 		if search_settings.no_match_template != None:
 			template = search_settings.no_match_template
 			rendered_results_list = [render_to_string(template, {})]
+		elif search_settings.no_match_message != None:
+			rendered_results_list = [search_settings.no_match_message]
 		else:
 			rendered_results_list = ['<font color="red">No Results</font>']
 	
