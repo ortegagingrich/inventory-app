@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -211,6 +211,8 @@ def item_open_submit(request, item_id):
 	
 	if request.POST['choice'] == "today":
 		open_date = date.today()
+	elif request.POST['choice'] == 'yesterday':
+		open_date = date.today() - timedelta(days=1)
 	elif request.POST['choice'] == "other":
 		other_date = request.POST['open_date']
 		if other_date == '':
