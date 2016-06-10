@@ -1,8 +1,11 @@
+{% load url_abs %}
 {% if item_list %}
 	<ul>
 	{% for item in item_list %}
 		<li>
-			<a href="{% url 'inventory:item_detail' item.id %}">{{item.item_type.name}}</a>
+			<a href="{% url_abs 'inventory:item_detail' item.id %}">
+				{{item.item_type.name}}
+			</a>
 			
 			{% if user.is_staff %}
 			{% if item.user.get_username %}
@@ -14,7 +17,7 @@
 			
 			{% if item.location %}
 				: Location: 
-				<a href="{% url 'inventory:location:detail' item.location.id %}">
+				<a href="{% url_abs 'inventory:location:detail' item.location.id %}">
 					{{ item.location.name }}
 				</a>
 			{% endif %}
