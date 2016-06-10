@@ -9,6 +9,12 @@ from inventory.models import Item
 from notifications.models import NotificationModel
 
 
+@receiver(models.signals.post_save, sender=Item)
+def create_profile(sender, instance, created, **kwargs):
+	if created:
+		instance.on_state_change()
+
+
 @receiver(models.signals.pre_delete, sender=Item)
 def on_item_delete(sender, instance, **kwargs):
 	#clear any unread notifications related to this item

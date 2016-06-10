@@ -128,7 +128,9 @@ def item_create_submit(request, type_key):
 	# Extract data from the form
 	try:
 		location_id = int(request.POST['location_list'])
+		location = Location.objects.get(pk=location_id)
 	except:
+		location = None
 		message = 'Please select a valid location.'
 		error_messages.append(message)
 	
@@ -148,6 +150,17 @@ def item_create_submit(request, type_key):
 	except:
 		message = 'Please select a valid expiration date.'
 		error_messages.append(message)
+	
+	# Make sure that the proposed storage location has an acceptable temperature
+	if location != None:
+		if not location.frozen:
+			if item_type.needed_temperature == 3:
+				message = 'This item must be frozen.  Please select a frozen storage location.'
+				error_messages.append(message)
+			elif item_type.needed_temperature == 2 and not location.refrigerated:
+				message = 'This item requires refrigeration but the location '
+				message += 'you selected is not refrigerated.'
+				error_messages.append(message)
 	
 	
 	if len(error_messages) > 0:
