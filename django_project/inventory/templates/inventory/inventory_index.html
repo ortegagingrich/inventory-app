@@ -18,7 +18,8 @@
 <h1>The Following Items are in the Database:</h1>
 
 <div class="basic">
-	{% include "inventory/item_list.html" %}
+	{% load item_list %}
+	{% item_list item_list %}
 </div>
 
 </font>

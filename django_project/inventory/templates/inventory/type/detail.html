@@ -107,7 +107,8 @@
 <h3>You currently have the following items of this type:</h3>
 
 <div class="basic">
-	{% include "inventory/item_list.html" %}
+	{% load item_list %}
+	{% item_list item_list %}
 </div>
 
 <div class="basic">
