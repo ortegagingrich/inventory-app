@@ -31,6 +31,42 @@ class IndexView(generic.ListView):
 			return itemset.order_by('printed_expiration_date')
 
 
+def item_index_expired(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	
+	queryset = Item.objects.filter(user=request.user)
+	item_list = []
+	for item in queryset:
+		if item.expired:
+			item_list.append(item)
+	
+	template = 'inventory/inventory_index_expired.html'
+	context = {
+		'item_list': item_list,
+	}
+	
+	return render(request, template, context)
+
+
+def item_index_old(request):
+	if not request.user.is_authenticated():
+		return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	
+	queryset = Item.objects.filter(user=request.user)
+	item_list = []
+	for item in queryset:
+		if item.soon_to_expire:
+			item_list.append(item)
+	
+	template = 'inventory/inventory_index_old.html'
+	context = {
+		'item_list': item_list,
+	}
+	
+	return render(request, template, context)
+
+
 class ItemDetailView(generic.DetailView):
 	model = Item
 	template_name = 'inventory/item_detail.html'

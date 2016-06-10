@@ -261,6 +261,13 @@ class Item(models.Model):
 			return self._improperly_stored
 	
 	@property
+	def soon_to_expire(self):
+		soon_to_expire_date = self.soon_to_expire_date
+		if self.expired or soon_to_expire_date == None:
+			return False
+		return date.today() > soon_to_expire_date
+	
+	@property
 	def opened(self):
 		return self.opened_date != None
 	

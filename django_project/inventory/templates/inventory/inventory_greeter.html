@@ -27,9 +27,15 @@
 		</a></li>
 	{% else %}
 		<li><a href="{% url 'inventory:inventory_index' %}">
-			View Current Items
+			View All Items
 		</a></li>
 	{% endif %}
+		<li><a href="{% url 'inventory:inventory_index_expired' %}">
+			View Expired Items
+		</a></li>
+		<li><a href="{% url 'inventory:inventory_index_old' %}">
+			View Items which will expire soon
+		</a></li>
 		<li><a href="{% url 'inventory:location:index' %}">
 			View Locations (e.g. pantries, refrigerators, freezers, etc.)
 		</a></li>

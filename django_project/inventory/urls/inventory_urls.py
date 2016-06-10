@@ -41,6 +41,10 @@ user_urlpatterns = [
 	url(r'^notifications/$', views_notification.notification_page, name='notification_page'),
 	#/inventory/index/
 	url(r'^index/$', views_item.IndexView.as_view(), name='inventory_index'),
+	#/inventory/index/expired/
+	url(r'^index/expired/$', views_item.item_index_expired, name='inventory_index_expired'),
+	#/inventory/index/old/
+	url(r'^index/old/', views_item.item_index_old, name='inventory_index_old'),
 	#/inventory/5/
 	#url(r'^(?P<item_id>[0-9]+)/$', views.item_detail, name='item_detail'),
 	url(r'^(?P<pk>[0-9]+)/$', views_item.ItemDetailView.as_view(), name='item_detail'),
