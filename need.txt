@@ -1,3 +1,6 @@
 1) Database Server
 2) Redis Server
 3) Web Server
+4) Supervisor
+5) celery -A django_project worker -l info
+6) celery -A django_project beat -l info
