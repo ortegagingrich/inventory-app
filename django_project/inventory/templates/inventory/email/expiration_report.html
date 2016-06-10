@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+{% load item_list %}
+
+<html>
+	<body>
+		Greetings {{ user.username }},
+		<br /> <br />
+		
+		<p>
+		This is an automated update email about the items you have entered into the inventory
+		system.
+		
+		{% if new_expired %}
+			Our records indicate that the following items have recently expired:
+			</p>
+			{% item_list new_expired %}
+			<p>
+		{% endif %}
+		{% if warning %}
+			Our records indicate that the following items will expire soon:
+			</p>
+			{% item_list warning %}
+			<p>
+		{% endif %}
+		
+		{% if old_expired %}
+			Additionally, the following expired items remain in the system:
+			</p>
+			{% item_list old_expired %}
+			<p>
+		{% endif %}
+		
+		</p>
+		
+		Inventory System
+	</body>
+</html>
