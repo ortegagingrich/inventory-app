@@ -12,37 +12,52 @@ import inventory.exceptions
 
 #login
 
-def login_page(request, error_message=None):
+def login_page(request, error_message=None, redirect_url = None):
+	if redirect_url == None:
+		try:
+			redirect_url = request.META.get('HTTP_REFERER')
+		except:
+			redirect_url = reverse('inventory:inventory_greeter')
+	
 	template = 'inventory/login_form.html'
 	context = {
 		'error_message': error_message,
+		'redirect_url': redirect_url,
 	}
 	return render(request, template, context)
 
 
 def login_submit(request):
 	try:
+		redirect_url = request.POST['redirecturl']
+	except:
+		redirect_url = None
+	
+	try:
 		username = request.POST['username']
 		password = request.POST['password']
 		user = authenticate(username=username, password=password)
 	except:
 		#login somehow failed
-		return login_page(request, "Invalid Login.")
+		return login_page(request, 'Invalid Login.', redirect_url)
 	
 	if user != None:
 		if user.is_active:
 			login(request, user)
-			return HttpResponseRedirect(reverse("inventory:inventory_greeter"))
+			if redirect_url != None:
+				return HttpResponseRedirect(redirect_url)
+			else:
+				return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
 		else:
-			error_message = "Account Inactive."
+			error_message = 'Account Inactive.'
 	else:
-		error_message = "Invalid Login."
-	return login_page(request, error_message)
+		error_message = 'Invalid Login.'
+	return login_page(request, error_message, redirect_url)
 
 
 def logout_submit(request):
 	logout(request)
-	return HttpResponseRedirect(reverse("inventory:inventory_greeter"))
+	return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
 
 
 #Profile operations

@@ -12,6 +12,9 @@
 	{% csrf_token %}
 	Username:<br> <input type="text" name="username"><br>
 	Password:<br> <input type="password" name="password"><br>
+	{% if redirect_url %}
+		<input type="hidden" name="redirecturl" value="{{ redirect_url }}">
+	{% endif %}
 	<br> <input type="submit" name="submit">
 </form>
 

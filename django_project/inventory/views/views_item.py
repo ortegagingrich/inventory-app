@@ -8,7 +8,7 @@ from django.views import generic
 
 from inventory.models import *
 from inventory.item.operations import *
-from inventory.views import views_location
+from inventory.views import views_location, views_user
 import inventory.exceptions
 
 
@@ -75,7 +75,8 @@ class ItemDetailView(generic.DetailView):
 		item = get_object_or_404(Item, pk=kwargs['pk'])
 		owner = item.user
 		if request.user != owner and not request.user.is_staff:
-			raise Http404
+			redirect_url = request.get_full_path()
+			return views_user.login_page(request, redirect_url=redirect_url)
 		return super(ItemDetailView, self).dispatch(request, *args, **kwargs)
 	
 	def get_context_data(self, **kwargs):
