@@ -180,6 +180,10 @@ class Item(models.Model):
 	#This is to prevent double-reporting of expiration.
 	_expiration_notified = models.BooleanField(default=False)
 	
+	#fields for email notifications
+	_email_expiration = models.BooleanField(default=False)
+	_email_old = models.BooleanField(default=False)
+	
 	
 	@staticmethod
 	def retrieve_with_write_permission(user, item_id):
