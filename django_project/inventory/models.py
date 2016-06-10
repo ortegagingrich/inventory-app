@@ -158,6 +158,9 @@ class ItemType(models.Model):
 """ Items """
 
 class Item(models.Model):
+	SOON_TO_EXPIRE_FACTOR = 6
+	
+	
 	user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 	
 	location = models.ForeignKey(Location, on_delete = models.CASCADE)
@@ -292,6 +295,26 @@ class Item(models.Model):
 				exp_date = self._location_date + self.item_type.freezer_expiration_term
 		
 		return exp_date
+	
+	@property
+	def soon_to_expire_date(self):
+		"""
+		Computes and returns the date after which the item will be considered
+		to be "soon to expire."
+		"""
+		expiration_date = self.expiration_date
+		
+		if expiration_date is None:
+			return None
+		elif self._location_date is None:
+			return expiration_date - timedelta(days=1)
+		
+		#if the item has been moved since it expired
+		if self._location_date > expiration_date:
+			return expiration_date
+		else:
+			diff = (expiration_date - self._location_date) / Item.SOON_TO_EXPIRE_FACTOR
+			return expiration_date - max(diff, timedelta(days=1))
 	
 	@property
 	def url(self):
