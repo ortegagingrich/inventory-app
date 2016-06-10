@@ -269,7 +269,7 @@ class Item(models.Model):
 		soon_to_expire_date = self.soon_to_expire_date
 		if self.expired or soon_to_expire_date == None:
 			return False
-		return date.today() > soon_to_expire_date
+		return date.today() >= soon_to_expire_date
 	
 	@property
 	def opened(self):
@@ -315,16 +315,22 @@ class Item(models.Model):
 		"""
 		expiration_date = self.expiration_date
 		
+		if self.opened_date != None:
+			critical_date = min(self.opened_date, self._location_date)
+		else:
+			critical_date = self._location_date
+		
+		
 		if expiration_date is None:
 			return None
-		elif self._location_date is None:
+		elif critical_date is None:
 			return expiration_date - timedelta(days=1)
 		
 		#if the item has been moved since it expired
-		if self._location_date > expiration_date:
+		if critical_date > expiration_date:
 			return expiration_date
 		else:
-			diff = (expiration_date - self._location_date) / Item.SOON_TO_EXPIRE_FACTOR
+			diff = (expiration_date - critical_date) / Item.SOON_TO_EXPIRE_FACTOR
 			return expiration_date - max(diff, timedelta(days=1))
 	
 	@property
