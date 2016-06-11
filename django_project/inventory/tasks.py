@@ -3,11 +3,22 @@ from datetime import timedelta
 from django.contrib.auth.models import User
 
 from celery.decorators import periodic_task
+from celery.schedules import crontab
 
 from inventory.models import Item
 from inventory.email import send_expiration_report
 
 
+@periodic_task(
+	run_every=crontab(hour=20, minute=27),
+	name='task_generate_daily_emails',
+	ignore_result=True,
+)
+def _task_generate_daily_emails():
+	"""
+	A wrapper for celery around generate_daily_emails
+	"""
+	generate_daily_emails
 
 def generate_daily_emails(user=None):
 	"""
