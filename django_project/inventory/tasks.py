@@ -18,7 +18,7 @@ def _task_generate_daily_emails():
 	"""
 	A wrapper for celery around generate_daily_emails
 	"""
-	generate_daily_emails
+	generate_daily_emails()
 
 def generate_daily_emails(user=None):
 	"""
