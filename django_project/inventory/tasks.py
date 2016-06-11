@@ -10,7 +10,7 @@ from inventory.email import send_expiration_report
 
 
 @periodic_task(
-	run_every=crontab(hour=20, minute=27),
+	run_every=crontab(hour=0, minute=5),
 	name='task_generate_daily_emails',
 	ignore_result=True,
 )
