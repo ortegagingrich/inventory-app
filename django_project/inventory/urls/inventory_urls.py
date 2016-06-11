@@ -63,6 +63,7 @@ user_urlpatterns = [
 ]
 
 admin_urlpatterns = [
+	url(r'crash/$', actions_admin.crash, name='cause_server_error'),
 	url(r'^purge/$', actions_admin.purge_database, name='purge_database'),
 ]
 

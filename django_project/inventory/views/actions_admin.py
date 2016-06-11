@@ -13,6 +13,12 @@ def _verify_admin(request):
 	return user.is_staff and user.is_active and user.is_authenticated()
 
 
+def crash(request):
+	if not _verify_admin(request):
+		raise Http404
+	raise Exception('This is only a test; not a real exception.')
+
+
 """
 Danger Zone!!!
 """
