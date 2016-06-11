@@ -214,10 +214,10 @@ class Item(models.Model):
 		return expired_items
 	
 	
-	#TODO: figure out when the appropriate time is to call this
 	# Called in the following circumstances:
 	#    1) when the user logs in
-	#    2) TODO: setup celery task to check this at regular intervals
+	#    2) By celery every 30 seconds, or so
+	#    3) By the admin, through inventory.tasks.update_user_notifications
 	@staticmethod
 	def update_notifications(user):
 		"""
