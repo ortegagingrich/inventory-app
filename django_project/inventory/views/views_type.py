@@ -12,6 +12,7 @@ from search.search import SearchSettings
 
 from inventory.models import *
 from inventory.type.operations import *
+from inventory.views import views_user
 
 
 
@@ -138,6 +139,10 @@ def search_owned_page(request):
 
 
 def detail_page(request, type_key, error_messages=None):
+	if not request.user.is_authenticated():
+		redirect_url = request.get_full_path()
+		return views_user.login_page(request, redirect_url=redirect_url)
+	
 	item_type = get_object_or_404(ItemType, pk=type_key)
 	
 	#if the type needs information to be completed
