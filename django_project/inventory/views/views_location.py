@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 
 from inventory.models import *
 from inventory.location.operations import *
+from inventory.views import views_user
 import inventory.exceptions
 
 
@@ -27,6 +28,11 @@ class IndexView(generic.ListView):
 
 
 def detail_page(request, location_key, error_messages=None):
+	if not request.user.is_authenticated():
+		redirect_url = request.get_full_path()
+		return views_user.login_page(request, redirect_url=redirect_url)
+		
+	
 	location = get_object_or_404(Location, pk=location_key)
 	
 	if location.user != request.user and not request.user.is_staff:
