@@ -55,6 +55,7 @@ def generate_daily_emails(user=None):
 	
 	try:
 		send_expiration_report(user, new_expired, old_expired, new_warning, old_warning)
+		print('Sent daily email to {}.'.format(user))
 	except Exception as ex:
 		print('Daily expiration email to {} failed: {}'.format(user, ex))
 
