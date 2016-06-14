@@ -467,7 +467,7 @@ def rename_submit(request, type_key):
 	if len(error_messages) > 0:
 		return detail_page(request, type_key, error_messages)
 	
-	redirect_url = reverse('inventory:type:detail', args=(item_type.id,))
+	redirect_url = reverse('inventory:type:detail', args=(type_key,))
 	return HttpResponseRedirect(redirect_url)
 
 
