@@ -41,7 +41,7 @@
 				{% endif %}
 				(Opened on {{item.opened_date}})
 				</font>
-			{% else %}
+			{% elif item.item_type.openable %}
 				<font color="blue">(Not Opened)</font>
 			{% endif %}
 		</li>
