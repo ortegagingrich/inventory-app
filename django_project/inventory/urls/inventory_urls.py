@@ -40,7 +40,7 @@ user_urlpatterns = [
 	#/inventory/notifications/
 	url(r'^notifications/$', views_notification.notification_page, name='notification_page'),
 	#/inventory/index/
-	url(r'^index/$', views_item.IndexView.as_view(), name='inventory_index'),
+	url(r'^index/$', views_item.index_page, name='inventory_index'),
 	#/inventory/index/expired/
 	url(r'^index/expired/$', views_item.item_index_expired, name='inventory_index_expired'),
 	#/inventory/index/old/

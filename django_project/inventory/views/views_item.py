@@ -12,23 +12,28 @@ from inventory.views import views_location, views_user
 import inventory.exceptions
 
 
-class IndexView(generic.ListView):
-	template_name = 'inventory/inventory_index.html'
-	context_object_name = 'item_list' #name used in the template
+
+def index_page(request, order_by_expiration=False):
+	if not request.user.is_authenticated():
+		redirect_url = reverse('inventory:inventory_greeter')
+		return HttpResponseRedirect(redirect_url)
 	
-	def dispatch(self, request, *args, **kwargs):
-		if request.user.is_authenticated():
-			return super(IndexView, self).dispatch(request, *args, **kwargs)
-		else:
-			return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
+	# Get the queryset
+	if request.user.is_staff and False:
+		itemset = Item.objects.all().order_by('item_type__name').order_by('user')
+	else:
+		itemset = Item.objects.filter(user=request.user)
+		itemset = itemset.order_by('item_type__name')
 	
-	def get_queryset(self):
-		if self.request.user.is_staff:
-			itemset = Item.objects.order_by('printed_expiration_date')
-			return itemset.order_by('user')
-		else:
-			itemset = Item.objects.filter(user=self.request.user)
-			return itemset.order_by('printed_expiration_date')
+	if order_by_expiration:
+		itemset = itemset.order_by('printed_expiration_date')
+	
+	
+	template = 'inventory/inventory_index.html'
+	context = {
+		'item_list': itemset,
+	}
+	return render(request, template, context)
 
 
 def item_index_expired(request):
@@ -37,7 +42,7 @@ def item_index_expired(request):
 	
 	queryset = Item.objects.filter(user=request.user)
 	item_list = []
-	for item in queryset:
+	for item in queryset.order_by('item_type__name'):
 		if item.expired:
 			item_list.append(item)
 	
@@ -55,7 +60,7 @@ def item_index_old(request):
 	
 	queryset = Item.objects.filter(user=request.user)
 	item_list = []
-	for item in queryset:
+	for item in queryset.order_by('item_type__name'):
 		if item.soon_to_expire:
 			item_list.append(item)
 	

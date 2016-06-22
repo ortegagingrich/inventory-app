@@ -24,7 +24,7 @@ class IndexView(generic.ListView):
 			return HttpResponseRedirect(reverse('inventory:inventory_greeter'))
 	
 	def get_queryset(self):
-		return Location.objects.filter(user=self.request.user)
+		return Location.objects.filter(user=self.request.user).order_by('name')
 
 
 def detail_page(request, location_key, error_messages=None):
