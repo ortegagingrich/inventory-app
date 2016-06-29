@@ -363,10 +363,13 @@ def _parse_type_form(request, omit_blank=False):
 	input_data = {}
 	error_messages = []
 	
+	class BadInputException(Exception):
+		pass
+	
 	try:
 		name = request.POST['name']
 		input_data['name'] = name
-	except:
+	except KeyError:
 		message = 'Please enter a valid name.'
 		error_messages.append(message)
 	
@@ -377,9 +380,9 @@ def _parse_type_form(request, omit_blank=False):
 		elif post_openable == 'no':
 			openable = False
 		else:
-			raise Exception
+			raise BadInputException
 		input_data['openable'] = openable
-	except:
+	except (KeyError, BadInputException):
 		message = 'Please specify whether the item has multiple servings'
 		error_message.append(message)
 	
@@ -399,9 +402,9 @@ def _parse_type_form(request, omit_blank=False):
 				days = int(request.POST['open_term_other'])
 				open_term = timedelta(days=days)
 			else:
-				raise Exception
+				raise BadInputException
 			input_data['open_expiration_term'] = open_term
-	except:
+	except (KeyError, BadInputException):
 		message = 'Please indicate how long the item lasts when opened'
 		error_messages.append(message)
 	
@@ -409,7 +412,7 @@ def _parse_type_form(request, omit_blank=False):
 	try:
 		needed_temperature = int(request.POST['refrigeration'])
 		input_data['needed_temperature'] = needed_temperature
-	except:
+	except KeyError:
 		message = 'Please indicate whether or not the item needs refrigeration'
 		error_messages.append(message)
 	
@@ -420,14 +423,14 @@ def _parse_type_form(request, omit_blank=False):
 			if post_frozen == 'no':
 				frozen_term = None
 			elif post_frozen == 'yes':
-				months = int(reqeust.POST['freeze_months'])
+				months = int(request.POST['freeze_months'])
 				weeks = int(request.POST['freeze_weeks'])
 				days = int(request.POST['freeze_days'])
 				frozen_term = timedelta(weeks=(weeks+4*months), days=days)
 			else:
-				raise Exception
+				raise BadInputException
 			input_data['freezer_expiration_term'] = frozen_term
-	except:
+	except (KeyError, BadInputException):
 		message = 'Please indicate if the item lasts longer when frozen'
 		error_messages.append(message)
 	
