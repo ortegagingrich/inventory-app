@@ -433,6 +433,8 @@ def _parse_type_form(request, omit_blank=False):
 	except (KeyError, BadInputException):
 		message = 'Please indicate if the item lasts longer when frozen'
 		error_messages.append(message)
+	except:
+		pass
 	
 	
 	# if needed, remove any blank entries
